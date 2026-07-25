@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { timeline } from '../data/content';
-import optLogo from '../../OPT로고.png';
+import optLogo from '../../opt-logo.png';
 
 const values = [
   ['01', '이론부터 제대로', '논문과 기초 이론을 함께 읽고 소화합니다.'],

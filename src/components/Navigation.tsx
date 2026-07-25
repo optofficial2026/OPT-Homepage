@@ -1,4 +1,4 @@
-import optLogo from '../../OPT로고.png';
+import optLogo from '../../opt-logo.png';
 
 type NavigationProps = { active: 'home' | 'log' | 'archive' };
 
