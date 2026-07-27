@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import {
+  defaultContent,
   formatStat,
   normalizeStat,
   sortTimelineNewestFirst,
@@ -36,4 +37,11 @@ test('slugs reject empty and malformed values', () => {
   assert.equal(validateSlug('paper-pilot'), true);
   assert.equal(validateSlug(''), false);
   assert.equal(validateSlug('공백 있음'), false);
+});
+
+test('default seminar archives preserve their material formats', () => {
+  const formats = defaultContent.archives
+    .filter(({ kind }) => kind === 'seminar')
+    .map(({ detail }) => detail.format);
+  assert.deepEqual(formats, ['SLIDE', 'SLIDE', 'NOTE', 'SLIDE', 'NOTE']);
 });

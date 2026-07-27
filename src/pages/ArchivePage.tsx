@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import ArchiveEditor from '../components/ArchiveEditor';
 import { useSite } from '../components/SiteContext';
-import type { ArchiveItem, HackathonDetail } from '../data/types';
+import type { ArchiveItem, HackathonDetail, SeminarDetail } from '../data/types';
 import { deleteArchiveItem } from '../lib/content-mutations';
 import { sitePath } from '../lib/paths';
 import HackathonDetailPage from './HackathonDetailPage';
@@ -44,7 +44,7 @@ export default function ArchivePage() {
         {isEditMode && <button className="admin-action" onClick={() => { setNewKind('seminar'); setEditing(null); }}>세미나 추가</button>}
       </div>
       <div className="seminar-list">{visibleSeminars.map((item) => <article className="seminar-row-wrap" key={item.id}>
-        <a className="seminar-row" href={`${sitePath('/archive/')}?id=${encodeURIComponent(item.slug)}`}><span>{item.occurredOn}</span><b>SLIDE</b><strong>{item.title}</strong><i>↗</i></a>{actions(item)}
+        <a className="seminar-row" href={`${sitePath('/archive/')}?id=${encodeURIComponent(item.slug)}`}><span>{item.occurredOn}</span><b>{(item.detail as SeminarDetail).format ?? 'SLIDE'}</b><strong>{item.title}</strong><i>↗</i></a>{actions(item)}
       </article>)}</div>
     </section>
     <section className="wrap archive-section">

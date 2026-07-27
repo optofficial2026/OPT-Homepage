@@ -16,6 +16,7 @@ export default function ArchiveEditor({ value, kind, close }: { value?: ArchiveI
     event.preventDefault(); const form = new FormData(event.currentTarget); const slug = String(form.get('slug'));
     if (!validateSlug(slug)) { setError('슬러그는 영문 소문자, 숫자, 하이픈만 사용할 수 있습니다.'); return; }
     const detail: SeminarDetail | HackathonDetail = kind === 'seminar' ? {
+      format: String(form.get('format')) as SeminarDetail['format'],
       body: String(form.get('body')), heroImageUrl: String(form.get('heroImageUrl')),
       galleryUrls: list(form, 'galleryUrls'), resourceUrl: String(form.get('resourceUrl')),
     } : {
@@ -41,6 +42,7 @@ export default function ArchiveEditor({ value, kind, close }: { value?: ArchiveI
     <label>기수<input name="cohort" type="number" min="0" defaultValue={value?.cohort ?? 1} required /></label><label>날짜<input name="occurredOn" type="date" defaultValue={value?.occurredOn.slice(0, 10)} required /></label>
     <label>목록 요약<textarea name="summary" defaultValue={value?.summary} required /></label><ImageUploadField label="썸네일 URL 또는 파일" name="thumbnailUrl" folder="archive" value={value?.thumbnailUrl} />
     {kind === 'seminar' ? <>
+      <label>자료 형식<select name="format" defaultValue={seminar?.format ?? 'SLIDE'}><option value="SLIDE">SLIDE</option><option value="NOTE">NOTE</option></select></label>
       <label>본문<textarea name="body" rows={8} defaultValue={seminar?.body} required /></label><ImageUploadField label="대표 이미지 URL 또는 파일" name="heroImageUrl" folder="archive" value={seminar?.heroImageUrl} />
       <label>갤러리 URL (한 줄에 하나)<textarea name="galleryUrls" defaultValue={seminar?.galleryUrls.join('\n')} /></label><label>자료 링크<input name="resourceUrl" type="url" defaultValue={seminar?.resourceUrl} /></label>
     </> : <>

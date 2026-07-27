@@ -216,3 +216,10 @@ test('home counter observer is recreated when administrator statistics change', 
   assert.match(home, /reveal\.disconnect\(\); \};\n  }, \[\]\);\n  useEffect\(\(\) => \{\n    const counter/);
   assert.match(home, /counter\.disconnect\(\); \};\n  }, \[settings\.activityCohorts, settings\.activityPrograms, settings\.activityMembers\]\)/);
 });
+
+test('seminar material format can be edited and is shown in the archive list', async () => {
+  const editor = await read('src/components/ArchiveEditor.tsx');
+  const archive = await read('src/pages/ArchivePage.tsx');
+  assert.match(editor, /name="format"/);
+  assert.match(archive, /detail as SeminarDetail\)\.format \?\? 'SLIDE'/);
+});

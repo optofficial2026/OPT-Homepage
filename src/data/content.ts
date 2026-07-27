@@ -74,7 +74,7 @@ const defaultArchives: ArchiveItem[] = [
     title: item.title,
     summary: `${item.type} 자료`,
     thumbnailUrl: '',
-    detail: { body: '세미나 상세 내용이 준비 중입니다.', heroImageUrl: '', galleryUrls: [], resourceUrl: '' },
+    detail: { format: item.type, body: '세미나 상세 내용이 준비 중입니다.', heroImageUrl: '', galleryUrls: [], resourceUrl: '' },
   })),
   ...hackathons.map((item, index): ArchiveItem => ({
     id: `hackathon-${index + 1}`,

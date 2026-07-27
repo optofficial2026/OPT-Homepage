@@ -34,6 +34,7 @@ export type ActivityPost = {
 };
 
 export type SeminarDetail = {
+  format: 'SLIDE' | 'NOTE';
   body: string;
   heroImageUrl: string;
   galleryUrls: string[];
