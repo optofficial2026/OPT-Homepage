@@ -23,6 +23,15 @@ test('timeline is sorted newest first without mutating the input', () => {
   assert.equal(input[0].id, 'old');
 });
 
+test('timeline understands the existing Korean period labels', () => {
+  const items = [
+    { id: 'summer', occurredOn: '2026년 여름방학', title: '', description: '' },
+    { id: 'recruit', occurredOn: '2026.09', title: '', description: '' },
+    { id: 'first-half', occurredOn: '2026년 상반기', title: '', description: '' },
+  ];
+  assert.deepEqual(sortTimelineNewestFirst(items).map(({ id }) => id), ['recruit', 'summer', 'first-half']);
+});
+
 test('slugs reject empty and malformed values', () => {
   assert.equal(validateSlug('paper-pilot'), true);
   assert.equal(validateSlug(''), false);

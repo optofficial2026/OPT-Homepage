@@ -642,10 +642,11 @@ git commit -m "docs: add external critique handoff"
 
 Implementation, local fallback, schema, build, and deploy workflow can be completed without credentials. The following live checks require values the repository must not invent:
 
+- a Supabase project created and owned by the OPT official account, not a member's personal account;
 - Supabase project URL;
 - Supabase publishable/anon key;
 - applied migration;
-- Auth administrator user and matching `admin_profiles` row;
+- an OPT official Auth administrator user and matching `admin_profiles` row;
 - GitHub Pages repository settings and Actions variables;
 - future `opt.it.kr` DNS ownership.
 

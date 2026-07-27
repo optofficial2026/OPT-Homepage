@@ -41,23 +41,23 @@
 
 - Auth: 관리자 이메일·비밀번호 로그인과 세션 관리
 - Postgres: 공개 콘텐츠와 사이트 설정 저장
-- Storage: 공개 썸네일 저장
+- Storage: 공개 웹 이미지 저장
 - Row Level Security: 공개 읽기와 관리자 쓰기 권한 분리
 
 브라우저에는 Supabase publishable key만 제공한다. secret key 또는 service role key는 저장소, 빌드 결과물, 브라우저에 포함하지 않는다.
 
 ## 5. 관리자 인증과 권한
 
-관리자 계정은 Supabase 대시보드에서 수동 생성한다. 공개 가입, 관리자 초대 화면, 비밀번호 초기화 관리 화면은 초기 범위에서 제외한다.
+Supabase 프로젝트와 최초 관리자 계정은 개인 학회원 계정이 아닌 OPT 공식 계정으로 생성·소유한다. 공식 계정의 이메일, 비밀번호, 복구 정보는 저장소나 프론트엔드 환경 변수에 기록하지 않는다. 관리자 사용자는 Supabase 대시보드에서 수동 생성하며 공개 가입, 관리자 초대 화면, 비밀번호 초기화 관리 화면은 초기 범위에서 제외한다.
 
-관리자 권한은 Auth 사용자의 `app_metadata.role` 값이 `admin`인지로 판단한다. `user_metadata`는 사용자가 변경할 수 있으므로 권한 판정에 사용하지 않는다.
+관리자 권한은 Auth 사용자의 UUID가 `admin_profiles.user_id`에 등록되어 있는지로 판단한다. 이메일, `user_metadata`, 브라우저 저장소 값은 권한 판정에 사용하지 않는다.
 
 RLS 정책은 다음 원칙을 따른다.
 
-- `anon`, `authenticated`: `published = true`인 공개 콘텐츠 조회 가능
+- `anon`, `authenticated`: 공개 콘텐츠 조회 가능
 - `authenticated` 관리자: 모든 콘텐츠 조회 및 추가·수정·삭제 가능
 - 비관리자 로그인 사용자: 쓰기 불가
-- Storage 공개 버킷: 썸네일 조회 가능
+- Storage 공개 버킷: 콘텐츠 이미지 조회 가능
 - Storage 쓰기: 관리자만 가능
 
 클라이언트의 버튼 숨김은 편의 기능일 뿐 보안 경계로 사용하지 않는다. 실제 쓰기 차단은 Postgres와 Storage RLS에서 수행한다.

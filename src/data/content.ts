@@ -43,8 +43,12 @@ export const hackathons: Hackathon[] = [
 export const normalizeStat = (value: number) => Math.max(0, Math.floor(Number.isFinite(value) ? value : 0));
 export const formatStat = (value: number) => `${normalizeStat(value)}+`;
 export const validateSlug = (slug: string) => /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug);
+const timelineKey = (value: string) => value
+  .replace('년 하반기', '.12')
+  .replace('년 여름방학', '.08')
+  .replace('년 상반기', '.06');
 export const sortTimelineNewestFirst = <T extends DynamicTimelineItem>(items: T[]) =>
-  [...items].sort((a, b) => b.occurredOn.localeCompare(a.occurredOn));
+  [...items].sort((a, b) => timelineKey(b.occurredOn).localeCompare(timelineKey(a.occurredOn)));
 
 const defaultActivities: ActivityPost[] = activityLog.map((item, index) => ({
   id: `activity-${index + 1}`,
