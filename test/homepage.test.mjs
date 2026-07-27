@@ -264,6 +264,14 @@ test('replacing a temporary image removes only the previous temporary upload', a
   assert.doesNotMatch(field, /removeMedia\(value\)/);
 });
 
+test('gallery image input supports five file previews without exposing URL entry', async () => {
+  const field = await read('src/components/GalleryUploadField.tsx');
+  assert.match(field, /multiple/);
+  assert.match(field, /MAX_GALLERY_IMAGES/);
+  assert.match(field, /type="hidden" name=\{name\}/);
+  assert.match(field, /removeMedia/);
+});
+
 test('losing administrator membership also exits edit mode', async () => {
   const context = await read('src/components/SiteContext.tsx');
   assert.match(context, /const nextIsAdmin = Boolean\(data\);/);

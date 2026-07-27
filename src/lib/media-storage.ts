@@ -3,6 +3,13 @@ import { supabase } from './supabase.ts';
 const TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
 const EXTENSIONS: Record<string, string> = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' };
 
+export const MAX_GALLERY_IMAGES = 5;
+
+export const galleryLimitError = (currentCount: number, incomingCount: number) =>
+  currentCount + incomingCount > MAX_GALLERY_IMAGES
+    ? `상세 사진은 최대 ${MAX_GALLERY_IMAGES}장까지 올릴 수 있습니다.`
+    : '';
+
 export const mediaError = ({ type, size }: { type: string; size: number }) => {
   if (!TYPES.has(type)) return 'JPEG, PNG, WebP 이미지만 업로드할 수 있습니다.';
   if (size > 5 * 1024 * 1024) return '이미지는 5MB 이하여야 합니다.';
