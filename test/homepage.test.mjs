@@ -113,6 +113,15 @@ test('timeline uses a narrow OPT-colored scrollbar without changing other scroll
   assert.match(styles, /\.timeline-scroll::\-webkit-scrollbar-thumb:hover\{/);
 });
 
+test('detail typography and sections use a restrained editorial scale', async () => {
+  const styles = await read('src/index.css');
+  assert.match(styles, /\.detail-hero h1,.hack-detail-hero h1\{[^}]*clamp\(40px,6vw,72px\)/);
+  assert.match(styles, /\.detail-section\{[^}]*border-top:/);
+  assert.match(styles, /\.detail-section h2\{[^}]*clamp\(26px,3\.5vw,40px\)/);
+  assert.match(styles, /\.detail-section-body\{[^}]*line-height:1\.8/);
+  assert.match(styles, /\.gallery-upload-grid\{/);
+});
+
 test('home reflects OPT second-generation recruiting and study-first messaging', async () => {
   const [app, content, home, navigation, styles] = await Promise.all([
     read('src/App.tsx'),
