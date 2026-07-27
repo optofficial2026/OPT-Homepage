@@ -223,3 +223,19 @@ test('seminar material format can be edited and is shown in the archive list', a
   assert.match(editor, /name="format"/);
   assert.match(archive, /detail as SeminarDetail\)\.format \?\? 'SLIDE'/);
 });
+
+test('public hackathon details hide empty administrator sections', async () => {
+  const detail = await read('src/pages/HackathonDetailPage.tsx');
+  assert.doesNotMatch(detail, /입력해주세요|해커톤 결과/);
+  for (const condition of [
+    'detail.problem &&',
+    'detail.solution &&',
+    'detail.features.length > 0',
+    'detail.galleryUrls.length > 0',
+    'detail.process.length > 0',
+    'detail.architecture &&',
+    'detail.retrospective &&',
+    'detail.award || detail.result',
+    'detail.teamName || detail.teamMembers.length > 0',
+  ]) assert.ok(detail.includes(condition), `missing condition: ${condition}`);
+});
