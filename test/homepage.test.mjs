@@ -47,7 +47,7 @@ test('React pages own typed content, reveal behavior, and activity filtering', a
   assert.match(data, /export const seminars/);
   assert.match(data, /export const hackathons/);
   assert.match(home, /useEffect/);
-  assert.match(log, /activityLog\.filter/);
+  assert.match(log, /content\.activities\.filter/);
   assert.match(archive, /visibleHackathons\.map/);
   assert.match(navigation, /href="\/log\/"/);
 });
@@ -99,7 +99,7 @@ test('visual regressions do not block navigation or advertise unavailable action
   assert.match(styles, /:focus-visible/);
   assert.match(app, /활동 기록은 계속 업데이트됩니다/);
   assert.doesNotMatch(app, /INSTAGRAM/);
-  assert.match(archive, /공개 링크 준비 중/);
+  assert.match(archive, /자세히 보기/);
   assert.doesNotMatch(archive, /GITHUB ↗/);
 });
 
@@ -114,10 +114,10 @@ test('home reflects OPT second-generation recruiting and study-first messaging',
 
   assert.match(home, /opt-logo\.png/);
   assert.match(home, /className="hero-logo/);
-  assert.match(home, /2기 부원 모집 중/);
-  assert.match(home, /\[\[1, '기'/);
-  assert.match(home, /\[4, '\+'/);
-  assert.match(home, /\[11, '\+'/);
+  assert.match(home, /settings\.recruitmentCohort.*기 부원 모집 중/);
+  assert.match(home, /settings\.activityCohorts/);
+  assert.match(home, /settings\.activityPrograms/);
+  assert.match(home, /settings\.activityMembers/);
   assert.match(home, /피드백으로 성장/);
   assert.doesNotMatch(home, /결과물로 확장/);
   assert.match(home, /주제는 당일 공개/);
@@ -140,9 +140,9 @@ test('home reflects the confirmed OPT identity and second-cohort recruiting copy
 
   assert.match(home, /opt-logo\.png/);
   assert.match(home, /className="hero-logo/);
-  assert.match(home, /\[\[1, '기'/);
-  assert.match(home, /\[4, '\+'/);
-  assert.match(home, /\[11, '\+'/);
+  assert.match(home, /settings\.activityCohorts/);
+  assert.match(home, /settings\.activityPrograms/);
+  assert.match(home, /settings\.activityMembers/);
   assert.match(home, /기술과 논문/);
   assert.match(home, /주도적으로 AI 이론/);
   assert.match(home, /피드백/);
@@ -180,4 +180,21 @@ test('administrator access stays inline and verifies database membership', async
   assert.match(context, /admin_profiles/);
   assert.match(context, /isEditMode/);
   assert.doesNotMatch(context, /email.*admin/i);
+});
+
+test('activity and archive records open first-party detail pages', async () => {
+  const [log, archive, activityDetail, hackathonDetail] = await Promise.all([
+    read('src/pages/LogPage.tsx'),
+    read('src/pages/ArchivePage.tsx'),
+    read('src/pages/ActivityDetailPage.tsx'),
+    read('src/pages/HackathonDetailPage.tsx'),
+  ]);
+  assert.match(log, /URLSearchParams/);
+  assert.match(log, /\/log\/\?id=/);
+  assert.match(archive, /URLSearchParams/);
+  assert.match(archive, /\/archive\/\?id=/);
+  assert.match(activityDetail, /galleryUrls/);
+  for (const section of ['문제', '해결', '주요 기능', '개발 과정', '시스템 구조', '회고', '결과', '기술 스택', '팀']) {
+    assert.match(hackathonDetail, new RegExp(section));
+  }
 });
