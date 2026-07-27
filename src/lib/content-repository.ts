@@ -54,7 +54,7 @@ export async function loadSiteContent(): Promise<ContentResult> {
   if (supabase) {
     try {
       const [settings, timeline, activities, archives] = await Promise.all([
-        supabase.from('site_settings').select('*').single(),
+        supabase.from('site_settings').select('*').maybeSingle(),
         supabase.from('timeline_items').select('*'),
         supabase.from('activity_posts').select('*').order('occurred_on', { ascending: false }),
         supabase.from('archive_items').select('*').order('occurred_on', { ascending: false }),
@@ -62,7 +62,7 @@ export async function loadSiteContent(): Promise<ContentResult> {
       const error = settings.error ?? timeline.error ?? activities.error ?? archives.error;
       if (error) throw error;
       const data: SiteContent = {
-        settings: settingsFromRow(settings.data),
+        settings: settings.data ? settingsFromRow(settings.data) : defaultContent.settings,
         timeline: sortTimelineNewestFirst((timeline.data ?? []).map(timelineFromRow)),
         activities: (activities.data ?? []).map(activityFromRow),
         archives: (archives.data ?? []).map(archiveFromRow),

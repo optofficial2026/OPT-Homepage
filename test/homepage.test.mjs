@@ -259,3 +259,9 @@ test('losing administrator membership also exits edit mode', async () => {
   assert.match(context, /const nextIsAdmin = Boolean\(data\);/);
   assert.match(context, /setIsAdmin\(nextIsAdmin\);\n      if \(!nextIsAdmin\) setEditMode\(false\);/);
 });
+
+test('missing remote settings do not discard remote content lists', async () => {
+  const repository = await read('src/lib/content-repository.ts');
+  assert.match(repository, /from\('site_settings'\)\.select\('\*'\)\.maybeSingle\(\)/);
+  assert.match(repository, /settings: settings\.data \? settingsFromRow\(settings\.data\) : defaultContent\.settings/);
+});
