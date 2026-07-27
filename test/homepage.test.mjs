@@ -246,3 +246,10 @@ test('content mutations reject writes that affect no rows', async () => {
   assert.match(mutations, /if \(!data\?\.length\) throw new Error\('권한이 없거나 대상이 존재하지 않습니다\.'/);
   assert.equal((mutations.match(/\.select\('id'\)/g) ?? []).length, 7);
 });
+
+test('replacing a temporary image removes only the previous temporary upload', async () => {
+  const field = await read('src/components/ImageUploadField.tsx');
+  assert.match(field, /removeMedia\(uploadedUrl\)/);
+  assert.match(field, /setUploadedUrl\(nextUrl\)/);
+  assert.doesNotMatch(field, /removeMedia\(value\)/);
+});
