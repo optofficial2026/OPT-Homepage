@@ -234,20 +234,21 @@ test('seminar material format can be edited and is shown in the archive list', a
   assert.match(archive, /detail as SeminarDetail\)\.format \?\? 'SLIDE'/);
 });
 
-test('public hackathon details hide empty administrator sections', async () => {
-  const detail = await read('src/pages/HackathonDetailPage.tsx');
-  assert.doesNotMatch(detail, /입력해주세요|해커톤 결과/);
-  for (const condition of [
-    'detail.problem &&',
-    'detail.solution &&',
-    'detail.features.length > 0',
-    'detail.galleryUrls.length > 0',
-    'detail.process.length > 0',
-    'detail.architecture &&',
-    'detail.retrospective &&',
-    'detail.award || detail.result',
-    'detail.teamName || detail.teamMembers.length > 0',
-  ]) assert.ok(detail.includes(condition), `missing condition: ${condition}`);
+test('all detail pages keep section headings and pending copy for empty content', async () => {
+  const [activity, seminar, hackathon, section, gallery] = await Promise.all([
+    read('src/pages/ActivityDetailPage.tsx'),
+    read('src/pages/SeminarDetailPage.tsx'),
+    read('src/pages/HackathonDetailPage.tsx'),
+    read('src/components/DetailSection.tsx'),
+    read('src/components/MediaGallery.tsx'),
+  ]);
+  assert.match(section, /준비 중입니다\./);
+  for (const heading of ['활동 내용', '활동 사진']) assert.match(activity, new RegExp(heading));
+  for (const heading of ['세미나 내용', '세미나 사진', '관련 자료']) assert.match(seminar, new RegExp(heading));
+  for (const heading of ['문제', '해결', '주요 기능', '프로젝트 화면', '개발 과정', '시스템 구조', '회고', '결과', '기술 스택', '팀']) {
+    assert.match(hackathon, new RegExp(heading));
+  }
+  assert.match(gallery, /slice\(0, MAX_GALLERY_IMAGES\)/);
 });
 
 test('content mutations reject writes that affect no rows', async () => {
