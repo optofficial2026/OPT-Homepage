@@ -3,6 +3,7 @@ import test from 'node:test';
 
 import {
   defaultContent,
+  displayDate,
   formatStat,
   normalizeStat,
   sortTimelineNewestFirst,
@@ -44,4 +45,9 @@ test('default seminar archives preserve their material formats', () => {
     .filter(({ kind }) => kind === 'seminar')
     .map(({ detail }) => detail.format);
   assert.deepEqual(formats, ['SLIDE', 'SLIDE', 'NOTE', 'SLIDE', 'NOTE']);
+});
+
+test('stored dates use the compact public display format', () => {
+  assert.equal(displayDate('2026-07-27'), '2026.07');
+  assert.equal(displayDate('2026.07'), '2026.07');
 });

@@ -6,6 +6,7 @@ import { deleteArchiveItem } from '../lib/content-mutations';
 import { sitePath } from '../lib/paths';
 import HackathonDetailPage from './HackathonDetailPage';
 import SeminarDetailPage from './SeminarDetailPage';
+import { displayDate } from '../data/content';
 
 export default function ArchivePage() {
   const { content, isEditMode, refetch } = useSite();
@@ -44,7 +45,7 @@ export default function ArchivePage() {
         {isEditMode && <button className="admin-action" onClick={() => { setNewKind('seminar'); setEditing(null); }}>세미나 추가</button>}
       </div>
       <div className="seminar-list">{visibleSeminars.map((item) => <article className="seminar-row-wrap" key={item.id}>
-        <a className="seminar-row" href={`${sitePath('/archive/')}?id=${encodeURIComponent(item.slug)}`}><span>{item.occurredOn}</span><b>{(item.detail as SeminarDetail).format ?? 'SLIDE'}</b><strong>{item.title}</strong><i>↗</i></a>{actions(item)}
+        <a className="seminar-row" href={`${sitePath('/archive/')}?id=${encodeURIComponent(item.slug)}`}><span>{displayDate(item.occurredOn)}</span><b>{(item.detail as SeminarDetail).format ?? 'SLIDE'}</b><strong>{item.title}</strong><i>↗</i></a>{actions(item)}
       </article>)}</div>
     </section>
     <section className="wrap archive-section">
@@ -54,7 +55,7 @@ export default function ArchivePage() {
       <div className="hack-grid">{visibleHackathons.map((item) => {
         const detail = item.detail as HackathonDetail;
         return <article className="hack-card" key={item.id}>
-          <a href={`${sitePath('/archive/')}?id=${encodeURIComponent(item.slug)}`}><div><h3>{item.title}</h3><span>{item.occurredOn}</span></div>
+          <a href={`${sitePath('/archive/')}?id=${encodeURIComponent(item.slug)}`}><div><h3>{item.title}</h3><span>{displayDate(item.occurredOn)}</span></div>
             <p>{item.summary}</p><div className="tech-list">{detail.techStack.map((tech) => <i key={tech}>{tech}</i>)}</div><footer>자세히 보기 →</footer>
           </a>{actions(item)}
         </article>;

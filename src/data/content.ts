@@ -42,6 +42,7 @@ export const hackathons: Hackathon[] = [
 
 export const normalizeStat = (value: number) => Math.max(0, Math.floor(Number.isFinite(value) ? value : 0));
 export const formatStat = (value: number) => `${normalizeStat(value)}+`;
+export const displayDate = (value: string) => value.slice(0, 7).replace('-', '.');
 export const validateSlug = (slug: string) => /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug);
 const timelineKey = (value: string) => value
   .replace('년 하반기', '.12')

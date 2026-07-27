@@ -1,6 +1,7 @@
 import type { ArchiveItem, HackathonDetail } from '../data/types';
 import MediaGallery from '../components/MediaGallery';
 import { sitePath } from '../lib/paths';
+import { displayDate } from '../data/content';
 
 const Section = ({ eyebrow, title, children }: { eyebrow: string; title: string; children: React.ReactNode }) =>
   <section className="hack-detail-section"><p className="mono cyan">{eyebrow}</p><h2>{title}</h2>{children}</section>;
@@ -8,7 +9,7 @@ const Section = ({ eyebrow, title, children }: { eyebrow: string; title: string;
 export default function HackathonDetailPage({ item }: { item: ArchiveItem }) {
   const detail = item.detail as HackathonDetail;
   const links = [['GitHub', detail.githubUrl], ['라이브 데모', detail.demoUrl], ['발표 자료', detail.presentationUrl]].filter((entry) => entry[1]);
-  return <main className="detail-page hack-detail"><header className="hack-detail-hero"><div className="hero-grid" /><div className="wrap"><a className="back mono" href={sitePath('/archive/')}>← HACKATHON ARCHIVE</a><div className="hack-meta"><b>HACKATHON</b><span>{item.cohort}기</span><span>{item.occurredOn}</span>{detail.award && <strong>{detail.award}</strong>}</div><h1>{item.title}</h1><p>{detail.tagline || item.summary}</p></div></header>
+  return <main className="detail-page hack-detail"><header className="hack-detail-hero"><div className="hero-grid" /><div className="wrap"><a className="back mono" href={sitePath('/archive/')}>← HACKATHON ARCHIVE</a><div className="hack-meta"><b>HACKATHON</b><span>{item.cohort}기</span><span>{displayDate(item.occurredOn)}</span>{detail.award && <strong>{detail.award}</strong>}</div><h1>{item.title}</h1><p>{detail.tagline || item.summary}</p></div></header>
     <article className="wrap detail-content">{detail.heroImageUrl ? <img className="detail-cover" src={detail.heroImageUrl} alt={`${item.title} 대표 화면`} /> : <div className="detail-cover placeholder">PROJECT HERO IMAGE</div>}
       {(detail.problem || detail.solution) && <div className="detail-two-col">
         {detail.problem && <Section eyebrow="01 / PROBLEM" title="문제"><p className="pre-line">{detail.problem}</p></Section>}

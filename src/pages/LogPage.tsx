@@ -5,6 +5,7 @@ import { deleteActivityPost } from '../lib/content-mutations';
 import { sitePath } from '../lib/paths';
 import type { ActivityPost, ActivityTag } from '../data/types';
 import ActivityDetailPage from './ActivityDetailPage';
+import { displayDate } from '../data/content';
 
 const filters = ['ALL', 'STUDY', 'SEMINAR', 'EVENT'] as const;
 type Filter = typeof filters[number];
@@ -43,9 +44,9 @@ export default function LogPage() {
       <div className="log-grid">{entries.map((item, index) => <article className="log-card" key={item.id}>
         <a href={`${sitePath('/log/')}?id=${encodeURIComponent(item.slug)}`}>
           <div className={`image-slot slot-${index % 3}`} style={item.thumbnailUrl ? { backgroundImage: `url(${item.thumbnailUrl})`, backgroundSize: 'cover' } : undefined}>
-            <span className={`tag tag-${item.tag.toLowerCase()}`}>{item.tag as ActivityTag}</span><span>{item.occurredOn}</span>
+            <span className={`tag tag-${item.tag.toLowerCase()}`}>{item.tag as ActivityTag}</span><span>{displayDate(item.occurredOn)}</span>
           </div>
-          <div className="log-copy"><p>{item.occurredOn}</p><h2>{item.title}</h2><div>{item.summary}</div></div>
+          <div className="log-copy"><p>{displayDate(item.occurredOn)}</p><h2>{item.title}</h2><div>{item.summary}</div></div>
         </a>
         {isEditMode && <div className="inline-actions"><button onClick={() => setEditing(item)}>수정</button><button onClick={async () => {
           if (confirm('삭제할까요?')) { await deleteActivityPost(item.id); await refetch(); }
