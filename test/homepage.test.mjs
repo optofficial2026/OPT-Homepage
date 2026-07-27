@@ -123,9 +123,9 @@ test('home reflects OPT second-generation recruiting and study-first messaging',
   assert.match(home, /주제는 당일 공개/);
   assert.match(home, /AI를 공부하고 친숙해지고 싶지만 막막한 당신/);
   assert.match(home, /<button className="button dark" type="button" disabled>지원하기<\/button>/);
-  assert.match(app, /2기 부원 모집 중/);
+  assert.match(app, /settings\.recruitmentCohort.*기 부원 모집 중/);
   assert.match(content, /2026\.09/);
-  assert.match(navigation, /2기 지원/);
+  assert.match(navigation, /settings\.recruitmentCohort.*기 지원/);
   assert.match(styles, /\.hero h1\{line-height:1\.02/);
 });
 
@@ -151,8 +151,8 @@ test('home reflects the confirmed OPT identity and second-cohort recruiting copy
   assert.match(home, /\['🎙', 'SEMINAR'/);
   assert.match(home, /당일 공개/);
   assert.match(home, /button className="button dark" type="button" disabled/);
-  assert.match(app, /2기 부원 모집 중/);
-  assert.match(navigation, />2기 지원</);
+  assert.match(app, /settings\.recruitmentCohort.*기 부원 모집 중/);
+  assert.match(navigation, /settings\.recruitmentCohort.*기 지원/);
   assert.match(navigation, /className="brand-mark"/);
   assert.match(navigation, /aria-label="OPT 홈"/);
   assert.match(content, /2026\.09/);
@@ -169,4 +169,15 @@ test('home reflects the confirmed OPT identity and second-cohort recruiting copy
   assert.match(styles, /\.hero h1\{line-height:1\.02/);
   assert.match(styles, /@media\(min-width:761px\)\{\.hero-content\{padding-left:min\(40vw,500px\)/);
   assert.match(styles, /\.stats\{position:absolute;top:370px;left:0;width:340px;height:368px;grid-template-columns:1fr/);
+});
+
+test('administrator access stays inline and verifies database membership', async () => {
+  const [app, context] = await Promise.all([
+    read('src/App.tsx'),
+    read('src/components/SiteContext.tsx'),
+  ]);
+  assert.doesNotMatch(app, /\/admin/);
+  assert.match(context, /admin_profiles/);
+  assert.match(context, /isEditMode/);
+  assert.doesNotMatch(context, /email.*admin/i);
 });
