@@ -30,7 +30,7 @@ export default function HomePage() {
     }), { threshold: 0.12 });
     document.querySelectorAll('.reveal').forEach((element) => reveal.observe(element));
     return () => { reveal.disconnect(); };
-  }, []);
+  }, [content.timeline]);
   useEffect(() => {
     const counter = new IntersectionObserver((entries, observer) => entries.forEach((entry) => {
       if (!entry.isIntersecting) return;

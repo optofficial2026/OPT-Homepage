@@ -211,9 +211,9 @@ test('github pages build uses a configurable base and public supabase values onl
   assert.doesNotMatch(`${vite}\n${workflow}\n${paths}`, /service[_-]?role/i);
 });
 
-test('home counter observer is recreated when administrator statistics change', async () => {
+test('home observers are recreated when dynamic content changes', async () => {
   const home = await read('src/pages/HomePage.tsx');
-  assert.match(home, /reveal\.disconnect\(\); \};\n  }, \[\]\);\n  useEffect\(\(\) => \{\n    const counter/);
+  assert.match(home, /reveal\.disconnect\(\); \};\n  }, \[content\.timeline\]\);\n  useEffect\(\(\) => \{\n    const counter/);
   assert.match(home, /counter\.disconnect\(\); \};\n  }, \[settings\.activityCohorts, settings\.activityPrograms, settings\.activityMembers\]\)/);
 });
 
