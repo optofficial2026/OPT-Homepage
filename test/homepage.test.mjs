@@ -103,6 +103,16 @@ test('visual regressions do not block navigation or advertise unavailable action
   assert.doesNotMatch(archive, /GITHUB ↗/);
 });
 
+test('timeline uses a narrow OPT-colored scrollbar without changing other scroll areas', async () => {
+  const styles = await read('src/index.css');
+
+  assert.match(styles, /\.timeline-scroll\{[^}]*scrollbar-width:thin/);
+  assert.match(styles, /\.timeline-scroll::\-webkit-scrollbar\{width:5px\}/);
+  assert.match(styles, /\.timeline-scroll::\-webkit-scrollbar-track\{background:transparent\}/);
+  assert.match(styles, /\.timeline-scroll::\-webkit-scrollbar-thumb\{[^}]*linear-gradient\(180deg,var\(--cyan\),var\(--lime\)\)/);
+  assert.match(styles, /\.timeline-scroll::\-webkit-scrollbar-thumb:hover\{/);
+});
+
 test('home reflects OPT second-generation recruiting and study-first messaging', async () => {
   const [app, content, home, navigation, styles] = await Promise.all([
     read('src/App.tsx'),
