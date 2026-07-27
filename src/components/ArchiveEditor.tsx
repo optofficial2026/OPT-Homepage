@@ -5,9 +5,17 @@ import { validateSlug } from '../data/content';
 import { useSite } from './SiteContext';
 import GalleryUploadField from './GalleryUploadField';
 import ImageUploadField from './ImageUploadField';
+import SeminarResourcesField from './SeminarResourcesField';
+import { visibleSeminarResources } from '../lib/seminar-resources';
 
 const list = (data: FormData, name: string) =>
   String(data.get(name) ?? '').split('\n').map((item) => item.trim()).filter(Boolean);
+const resources = (data: FormData) => {
+  try {
+    const value = JSON.parse(String(data.get('resources') ?? '[]'));
+    return Array.isArray(value) ? value : [];
+  } catch { return []; }
+};
 
 export default function ArchiveEditor({ value, kind, close }: { value?: ArchiveItem; kind: ArchiveItem['kind']; close: () => void }) {
   const { refetch } = useSite();
@@ -28,7 +36,8 @@ export default function ArchiveEditor({ value, kind, close }: { value?: ArchiveI
       body: String(form.get('body')),
       heroImageUrl: String(form.get('heroImageUrl')),
       galleryUrls: list(form, 'galleryUrls'),
-      resourceUrl: String(form.get('resourceUrl')),
+      resourceUrl: seminar?.resourceUrl ?? '',
+      resources: resources(form),
     } : {
       tagline: String(form.get('tagline')),
       award: String(form.get('award')),
@@ -125,10 +134,7 @@ export default function ArchiveEditor({ value, kind, close }: { value?: ArchiveI
       </fieldset>
       <fieldset className="editor-group">
         <legend>관련 링크</legend>
-        <label>관련 자료 링크
-          <small>PDF, Google Drive, Notion 등 ‘자료 보기’ 버튼으로 열 주소입니다.</small>
-          <input name="resourceUrl" type="url" defaultValue={seminar?.resourceUrl} />
-        </label>
+        <SeminarResourcesField name="resources" value={seminar ? visibleSeminarResources(seminar) : []} />
       </fieldset>
     </> : <>
       <fieldset className="editor-group">

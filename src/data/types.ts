@@ -39,6 +39,15 @@ export type SeminarDetail = {
   heroImageUrl: string;
   galleryUrls: string[];
   resourceUrl: string;
+  resources?: SeminarResource[];
+};
+
+export type SeminarResource = {
+  id: string;
+  title: string;
+  kind: 'PDF' | 'SLIDE' | 'VIDEO' | 'WEB' | 'CODE';
+  description: string;
+  url: string;
 };
 
 export type HackathonDetail = {

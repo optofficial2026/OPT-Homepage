@@ -243,6 +243,18 @@ test('seminar material format can be edited and is shown in the archive list', a
   assert.match(archive, /detail as SeminarDetail\)\.format \?\? 'SLIDE'/);
 });
 
+test('seminar details present descriptive resource cards instead of a generic link', async () => {
+  const [detail, editor] = await Promise.all([
+    read('src/pages/SeminarDetailPage.tsx'),
+    read('src/components/SeminarResourcesField.tsx'),
+  ]);
+  assert.match(detail, /visibleSeminarResources/);
+  assert.match(detail, /resourceAction/);
+  assert.match(detail, /aria-label/);
+  assert.doesNotMatch(detail, />자료 보기 ↗</);
+  assert.match(editor, /PDF·PPT 파일 직접 올리기/);
+});
+
 test('all detail pages keep section headings and pending copy for empty content', async () => {
   const [activity, seminar, hackathon, section, gallery] = await Promise.all([
     read('src/pages/ActivityDetailPage.tsx'),

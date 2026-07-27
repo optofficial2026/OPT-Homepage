@@ -3,9 +3,11 @@ import DetailSection from '../components/DetailSection';
 import MediaGallery from '../components/MediaGallery';
 import { sitePath } from '../lib/paths';
 import { displayDate } from '../data/content';
+import { resourceAction, visibleSeminarResources } from '../lib/seminar-resources';
 
 export default function SeminarDetailPage({ item }: { item: ArchiveItem }) {
   const detail = item.detail as SeminarDetail;
+  const resources = visibleSeminarResources(detail);
   return <main className="detail-page">
     <header className="detail-hero"><div className="wrap">
       <a className="back mono" href={sitePath('/archive/')}>← 아카이브</a>
@@ -23,8 +25,17 @@ export default function SeminarDetailPage({ item }: { item: ArchiveItem }) {
       <DetailSection eyebrow="02 / GALLERY" title="세미나 사진" empty={detail.galleryUrls.length === 0}>
         <MediaGallery urls={detail.galleryUrls} alt={item.title} />
       </DetailSection>
-      <DetailSection eyebrow="03 / RESOURCE" title="관련 자료" empty={!detail.resourceUrl}>
-        <a className="button primary" href={detail.resourceUrl} target="_blank" rel="noreferrer">자료 보기 ↗</a>
+      <DetailSection eyebrow="03 / RESOURCE" title="관련 자료" empty={resources.length === 0}>
+        <div className="resource-card-grid">{resources.map((resource) =>
+          <article className="resource-card" key={resource.id}>
+            <b>{resource.kind}</b>
+            <h3>{resource.title}</h3>
+            <p>{resource.description || '설명이 준비 중입니다.'}</p>
+            <a href={resource.url} target="_blank" rel="noreferrer" aria-label={`${resource.title} ${resourceAction(resource.kind)}`}>
+              {resourceAction(resource.kind)} ↗
+            </a>
+          </article>
+        )}</div>
       </DetailSection>
     </article>
   </main>;
