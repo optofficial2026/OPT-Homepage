@@ -47,7 +47,8 @@ export const validateSlug = (slug: string) => /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(
 const timelineKey = (value: string) => value
   .replace('년 하반기', '.12')
   .replace('년 여름방학', '.08')
-  .replace('년 상반기', '.06');
+  .replace('년 상반기', '.06')
+  .replace(/[.-]/g, '');
 export const sortTimelineNewestFirst = <T extends DynamicTimelineItem>(items: T[]) =>
   [...items].sort((a, b) => timelineKey(b.occurredOn).localeCompare(timelineKey(a.occurredOn)));
 

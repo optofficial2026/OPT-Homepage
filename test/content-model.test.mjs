@@ -34,6 +34,14 @@ test('timeline understands the existing Korean period labels', () => {
   assert.deepEqual(sortTimelineNewestFirst(items).map(({ id }) => id), ['recruit', 'summer', 'first-half']);
 });
 
+test('timeline sorts mixed date delimiters chronologically', () => {
+  const items = [
+    { id: 'march', occurredOn: '2026.03.07', title: '', description: '' },
+    { id: 'october', occurredOn: '2026-10-01', title: '', description: '' },
+  ];
+  assert.deepEqual(sortTimelineNewestFirst(items).map(({ id }) => id), ['october', 'march']);
+});
+
 test('slugs reject empty and malformed values', () => {
   assert.equal(validateSlug('paper-pilot'), true);
   assert.equal(validateSlug(''), false);
