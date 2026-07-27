@@ -272,6 +272,21 @@ test('gallery image input supports five file previews without exposing URL entry
   assert.match(field, /removeMedia/);
 });
 
+test('content editors explain image placement and use file-first gallery controls', async () => {
+  const [activity, archive] = await Promise.all([
+    read('src/components/ActivityEditor.tsx'),
+    read('src/components/ArchiveEditor.tsx'),
+  ]);
+  for (const editor of [activity, archive]) {
+    assert.match(editor, /목록 썸네일/);
+    assert.match(editor, /상세 대표 이미지/);
+    assert.match(editor, /GalleryUploadField/);
+    assert.doesNotMatch(editor, /갤러리 URL/);
+  }
+  assert.match(activity, /주소 이름 \(영문\)/);
+  assert.match(archive, /주소 이름 \(영문\)/);
+});
+
 test('losing administrator membership also exits edit mode', async () => {
   const context = await read('src/components/SiteContext.tsx');
   assert.match(context, /const nextIsAdmin = Boolean\(data\);/);
