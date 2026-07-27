@@ -112,7 +112,7 @@ test('home reflects OPT second-generation recruiting and study-first messaging',
     read('src/index.css'),
   ]);
 
-  assert.match(home, /OPT.*\.png/);
+  assert.match(home, /opt-logo\.png/);
   assert.match(home, /className="hero-logo/);
   assert.match(home, /2기 부원 모집 중/);
   assert.match(home, /\[\[1, '기'/);
@@ -138,7 +138,7 @@ test('home reflects the confirmed OPT identity and second-cohort recruiting copy
     read('src/index.css'),
   ]);
 
-  assert.match(home, /OPT.*png/);
+  assert.match(home, /opt-logo\.png/);
   assert.match(home, /className="hero-logo/);
   assert.match(home, /\[\[1, '기'/);
   assert.match(home, /\[4, '\+'/);
