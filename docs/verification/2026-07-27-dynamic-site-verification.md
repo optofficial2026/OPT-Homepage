@@ -94,6 +94,14 @@
 - 저장소 Pages에서는 `/OPT-Homepage/`, `opt.it.kr` 적용 후에는 `/`로 환경값만 변경하면 된다.
 - Supabase 생성, SQL 실행, OPT 공식 관리자 등록, GitHub 변수, Pages 활성화, 추후 도메인 변경 절차가 README에 있다.
 
+### 실제 배포 확인
+
+- 공개 URL: `https://optofficial2026.github.io/OPT-Homepage/`
+- GitHub Actions run: `30247411345`
+- checkout, 의존성 설치, 테스트, 타입 검사, 빌드, artifact 업로드, Pages 배포 전 단계 성공
+- 공개 홈, 활동 상세, 해커톤 상세 및 자산 요청 HTTP 200
+- Chrome 렌더링에서 홈 `1+ / 4+ / 11+`, PaperPilot 상세 10개 섹션, 공개 상태 관리자 버튼 미노출, 브라우저 오류 없음
+
 ### 3차에서 달라진 점
 
 절대 `/log/`, `/archive/` 링크를 `BASE_URL` 기반 helper로 통일했다. 애플리케이션 코드를 다시 바꾸지 않고 저장소 Pages와 사용자 지정 도메인을 오갈 수 있게 됐다.
@@ -104,7 +112,7 @@
 |---|---|---|---|---|
 | 1 | 공개 기능과 상세 화면 | 목록 카드에 실제 상세 흐름이 필요 | 활동·세미나·해커톤 상세와 인라인 편집 연결 | 없음 |
 | 2 | 권한과 장애 | 최초 Supabase 연결 시 목록 공백 가능, 한글 기간 정렬 문제 | DB seed, 기간 정렬, 공식 계정 소유 원칙 반영 | OPT 공식 Supabase 프로젝트에서 RLS 실검증 |
-| 3 | 배포와 운영 | 저장소 Pages는 루트 절대 링크가 깨짐 | base helper와 Actions/README 추가 | GitHub Pages 활성화, Actions 변수, 추후 DNS |
+| 3 | 배포와 운영 | 저장소 Pages는 루트 절대 링크가 깨짐 | base helper와 Actions/README 추가, GitHub Pages 실제 배포 | Supabase Actions 변수, 추후 DNS |
 
 ## 결론
 
