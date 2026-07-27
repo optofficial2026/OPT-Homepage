@@ -49,7 +49,7 @@ test('React pages own typed content, reveal behavior, and activity filtering', a
   assert.match(home, /useEffect/);
   assert.match(log, /content\.activities\.filter/);
   assert.match(archive, /visibleHackathons\.map/);
-  assert.match(navigation, /href="\/log\/"/);
+  assert.match(navigation, /sitePath\('\/log\/'\)/);
 });
 
 test('activity log and archive can filter materials by cohort', async () => {
@@ -190,11 +190,23 @@ test('activity and archive records open first-party detail pages', async () => {
     read('src/pages/HackathonDetailPage.tsx'),
   ]);
   assert.match(log, /URLSearchParams/);
-  assert.match(log, /\/log\/\?id=/);
+  assert.match(log, /sitePath\('\/log\/'\)/);
   assert.match(archive, /URLSearchParams/);
-  assert.match(archive, /\/archive\/\?id=/);
+  assert.match(archive, /sitePath\('\/archive\/'\)/);
   assert.match(activityDetail, /galleryUrls/);
   for (const section of ['문제', '해결', '주요 기능', '개발 과정', '시스템 구조', '회고', '결과', '기술 스택', '팀']) {
     assert.match(hackathonDetail, new RegExp(section));
   }
+});
+
+test('github pages build uses a configurable base and public supabase values only', async () => {
+  const [vite, workflow, paths] = await Promise.all([
+    read('vite.config.ts'),
+    read('.github/workflows/deploy-pages.yml'),
+    read('src/lib/paths.ts'),
+  ]);
+  assert.match(vite, /VITE_SITE_BASE_PATH/);
+  assert.match(workflow, /upload-pages-artifact/);
+  assert.match(workflow, /VITE_SUPABASE_PUBLISHABLE_KEY/);
+  assert.doesNotMatch(`${vite}\n${workflow}\n${paths}`, /service[_-]?role/i);
 });
