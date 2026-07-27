@@ -239,3 +239,10 @@ test('public hackathon details hide empty administrator sections', async () => {
     'detail.teamName || detail.teamMembers.length > 0',
   ]) assert.ok(detail.includes(condition), `missing condition: ${condition}`);
 });
+
+test('content mutations reject writes that affect no rows', async () => {
+  const mutations = await read('src/lib/content-mutations.ts');
+  assert.match(mutations, /data: unknown\[\] \| null/);
+  assert.match(mutations, /if \(!data\?\.length\) throw new Error\('권한이 없거나 대상이 존재하지 않습니다\.'/);
+  assert.equal((mutations.match(/\.select\('id'\)/g) ?? []).length, 7);
+});
