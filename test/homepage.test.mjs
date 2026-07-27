@@ -12,7 +12,7 @@ test('Vite React scaffold exposes the maintenance scripts and entry point', asyn
   const packageJson = JSON.parse(await read('package.json'));
   assert.equal(packageJson.scripts.dev, 'vite');
   assert.equal(packageJson.scripts.build, 'vite build');
-  assert.equal(packageJson.scripts.test, 'node --test test/homepage.test.mjs');
+  assert.equal(packageJson.scripts.test, 'node --test test/*.test.mjs');
 });
 
 test('all routes mount the shared React entry with a page marker', async () => {

@@ -1,3 +1,5 @@
+import type { ActivityPost, ArchiveItem, SiteContent, TimelineItem as DynamicTimelineItem } from './types';
+
 export type ActivityTag = 'STUDY' | 'SEMINAR' | 'EVENT';
 export type Cohort = '1기';
 
@@ -37,3 +39,87 @@ export const hackathons: Hackathon[] = [
   { cohort: '1기', name: '업데이트 예정', date: '—', desc: '다음 해커톤 결과물이 이곳에 추가됩니다.', tech: ['UPCOMING'] },
   { cohort: '1기', name: '업데이트 예정', date: '—', desc: '다음 해커톤 결과물이 이곳에 추가됩니다.', tech: ['UPCOMING'] },
 ];
+
+export const normalizeStat = (value: number) => Math.max(0, Math.floor(Number.isFinite(value) ? value : 0));
+export const formatStat = (value: number) => `${normalizeStat(value)}+`;
+export const validateSlug = (slug: string) => /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug);
+export const sortTimelineNewestFirst = <T extends DynamicTimelineItem>(items: T[]) =>
+  [...items].sort((a, b) => b.occurredOn.localeCompare(a.occurredOn));
+
+const defaultActivities: ActivityPost[] = activityLog.map((item, index) => ({
+  id: `activity-${index + 1}`,
+  slug: `activity-${index + 1}`,
+  tag: item.tag,
+  cohort: 1,
+  occurredOn: `${item.date.replace('.', '-')}-01`,
+  title: item.title,
+  summary: item.desc,
+  body: item.desc,
+  thumbnailUrl: '',
+  heroImageUrl: '',
+  galleryUrls: [],
+}));
+
+const defaultArchives: ArchiveItem[] = [
+  ...seminars.map((item, index): ArchiveItem => ({
+    id: `seminar-${index + 1}`,
+    slug: `seminar-${index + 1}`,
+    kind: 'seminar',
+    cohort: 1,
+    occurredOn: `${item.date.replace('.', '-')}-01`,
+    title: item.title,
+    summary: `${item.type} 자료`,
+    thumbnailUrl: '',
+    detail: { body: '세미나 상세 내용이 준비 중입니다.', heroImageUrl: '', galleryUrls: [], resourceUrl: '' },
+  })),
+  ...hackathons.map((item, index): ArchiveItem => ({
+    id: `hackathon-${index + 1}`,
+    slug: `hackathon-${index + 1}`,
+    kind: 'hackathon',
+    cohort: 1,
+    occurredOn: item.date === '—' ? '2025-01-01' : `${item.date.replace('.', '-')}-01`,
+    title: item.name,
+    summary: item.desc,
+    thumbnailUrl: '',
+    detail: {
+      tagline: item.desc,
+      award: '',
+      heroImageUrl: '',
+      problem: '',
+      solution: '',
+      features: [],
+      galleryUrls: [],
+      process: [],
+      architecture: '',
+      retrospective: '',
+      result: '',
+      techStack: item.tech,
+      teamName: '',
+      teamMembers: [],
+      githubUrl: '',
+      demoUrl: '',
+      presentationUrl: '',
+    },
+  })),
+];
+
+export const defaultContent: SiteContent = {
+  settings: {
+    recruitmentEnabled: true,
+    recruitmentCohort: 2,
+    recruitmentCount: 0,
+    recruitmentFormUrl: '',
+    recruitmentClosedMessage: '현재는 모집 중이 아닙니다. 다음 기수 지원 때 다시 찾아주세요.',
+    activityCohorts: 1,
+    activityMembers: 11,
+    activityPrograms: 4,
+  },
+  timeline: timeline.map((item, index) => ({
+    id: `timeline-${index + 1}`,
+    occurredOn: item.date,
+    title: item.title,
+    description: item.body,
+  })),
+  activities: defaultActivities,
+  archives: defaultArchives,
+};
