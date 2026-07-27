@@ -35,7 +35,9 @@ export function SiteProvider({ children }: { children: ReactNode }) {
       setUser(nextUser);
       if (!nextUser) { setIsAdmin(false); setEditMode(false); return; }
       const { data } = await client.from('admin_profiles').select('user_id').eq('user_id', nextUser.id).maybeSingle();
-      setIsAdmin(Boolean(data));
+      const nextIsAdmin = Boolean(data);
+      setIsAdmin(nextIsAdmin);
+      if (!nextIsAdmin) setEditMode(false);
     };
     void client.auth.getUser().then(({ data }) => verify(data.user));
     const { data } = client.auth.onAuthStateChange((_event, session) => { void verify(session?.user ?? null); });
@@ -50,6 +52,8 @@ export function SiteProvider({ children }: { children: ReactNode }) {
     const { data: profile } = await supabase.from('admin_profiles').select('user_id').eq('user_id', data.user.id).maybeSingle();
     if (!profile) {
       await supabase.auth.signOut();
+      setIsAdmin(false);
+      setEditMode(false);
       setAuthError('관리자 권한이 없는 계정입니다.');
       return false;
     }

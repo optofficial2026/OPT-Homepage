@@ -253,3 +253,9 @@ test('replacing a temporary image removes only the previous temporary upload', a
   assert.match(field, /setUploadedUrl\(nextUrl\)/);
   assert.doesNotMatch(field, /removeMedia\(value\)/);
 });
+
+test('losing administrator membership also exits edit mode', async () => {
+  const context = await read('src/components/SiteContext.tsx');
+  assert.match(context, /const nextIsAdmin = Boolean\(data\);/);
+  assert.match(context, /setIsAdmin\(nextIsAdmin\);\n      if \(!nextIsAdmin\) setEditMode\(false\);/);
+});
