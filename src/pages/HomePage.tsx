@@ -29,6 +29,9 @@ export default function HomePage() {
       if (entry.isIntersecting) { entry.target.classList.add('is-visible'); observer.unobserve(entry.target); }
     }), { threshold: 0.12 });
     document.querySelectorAll('.reveal').forEach((element) => reveal.observe(element));
+    return () => { reveal.disconnect(); };
+  }, []);
+  useEffect(() => {
     const counter = new IntersectionObserver((entries, observer) => entries.forEach((entry) => {
       if (!entry.isIntersecting) return;
       observer.unobserve(entry.target);
@@ -38,8 +41,8 @@ export default function HomePage() {
       requestAnimationFrame(tick);
     }), { threshold: 0.5 });
     document.querySelectorAll<HTMLElement>('[data-count]').forEach((element) => counter.observe(element));
-    return () => { reveal.disconnect(); counter.disconnect(); };
-  }, []);
+    return () => { counter.disconnect(); };
+  }, [settings.activityCohorts, settings.activityPrograms, settings.activityMembers]);
   useEffect(() => { if (timelineRef.current) timelineRef.current.scrollTop = 0; }, [content.timeline]);
 
   return <>

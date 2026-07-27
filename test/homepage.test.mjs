@@ -210,3 +210,9 @@ test('github pages build uses a configurable base and public supabase values onl
   assert.match(workflow, /VITE_SUPABASE_PUBLISHABLE_KEY/);
   assert.doesNotMatch(`${vite}\n${workflow}\n${paths}`, /service[_-]?role/i);
 });
+
+test('home counter observer is recreated when administrator statistics change', async () => {
+  const home = await read('src/pages/HomePage.tsx');
+  assert.match(home, /reveal\.disconnect\(\); \};\n  }, \[\]\);\n  useEffect\(\(\) => \{\n    const counter/);
+  assert.match(home, /counter\.disconnect\(\); \};\n  }, \[settings\.activityCohorts, settings\.activityPrograms, settings\.activityMembers\]\)/);
+});
