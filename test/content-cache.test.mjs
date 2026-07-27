@@ -21,8 +21,16 @@ test('cache round-trips current content', () => {
 test('cache ignores malformed or old data', () => {
   const malformed = { getItem: () => '{', setItem() {} };
   const old = { getItem: () => JSON.stringify({ version: 0, data: defaultContent }), setItem() {} };
+  const invalidShape = {
+    getItem: () => JSON.stringify({
+      version: 1,
+      data: { settings: null, timeline: {}, activities: [], archives: 'invalid' },
+    }),
+    setItem() {},
+  };
   assert.equal(readContentCache(malformed), null);
   assert.equal(readContentCache(old), null);
+  assert.equal(readContentCache(invalidShape), null);
 });
 
 test('storage errors never escape', () => {

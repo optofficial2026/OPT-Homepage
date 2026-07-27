@@ -5,8 +5,18 @@ type StorageLike = Pick<Storage, 'getItem' | 'setItem'>;
 
 export function readContentCache(storage: StorageLike): SiteContent | null {
   try {
-    const value = JSON.parse(storage.getItem(KEY) ?? 'null') as { version?: number; data?: SiteContent } | null;
-    return value?.version === 1 && value.data ? value.data : null;
+    const value = JSON.parse(storage.getItem(KEY) ?? 'null') as { version?: number; data?: Partial<SiteContent> } | null;
+    const data = value?.data;
+    return value?.version === 1
+      && data
+      && typeof data.settings === 'object'
+      && data.settings !== null
+      && !Array.isArray(data.settings)
+      && Array.isArray(data.timeline)
+      && Array.isArray(data.activities)
+      && Array.isArray(data.archives)
+      ? data as SiteContent
+      : null;
   } catch {
     return null;
   }
