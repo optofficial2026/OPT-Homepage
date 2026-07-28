@@ -37,6 +37,7 @@ export function SiteProvider({ children }: { children: ReactNode }) {
       const { data } = await client.from('admin_profiles').select('user_id').eq('user_id', nextUser.id).maybeSingle();
       const nextIsAdmin = Boolean(data);
       setIsAdmin(nextIsAdmin);
+      if (nextIsAdmin) setLoginOpen(false);
       if (!nextIsAdmin) setEditMode(false);
     };
     void client.auth.getUser().then(({ data }) => verify(data.user));

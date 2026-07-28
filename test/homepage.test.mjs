@@ -312,7 +312,7 @@ test('content editors explain image placement and use file-first gallery control
 test('losing administrator membership also exits edit mode', async () => {
   const context = await read('src/components/SiteContext.tsx');
   assert.match(context, /const nextIsAdmin = Boolean\(data\);/);
-  assert.match(context, /setIsAdmin\(nextIsAdmin\);\n      if \(!nextIsAdmin\) setEditMode\(false\);/);
+  assert.match(context, /setIsAdmin\(nextIsAdmin\);\n      if \(nextIsAdmin\) setLoginOpen\(false\);\n      if \(!nextIsAdmin\) setEditMode\(false\);/);
 });
 
 test('missing remote settings do not discard remote content lists', async () => {
