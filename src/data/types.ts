@@ -4,7 +4,6 @@ export type ArchiveKind = 'seminar' | 'hackathon';
 export type SiteSettings = {
   recruitmentEnabled: boolean;
   recruitmentCohort: number;
-  recruitmentCount: number;
   recruitmentFormUrl: string;
   recruitmentClosedMessage: string;
   activityCohorts: number;

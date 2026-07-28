@@ -15,7 +15,6 @@ export async function updateSiteSettings(value: SiteSettings) {
   const result = await client().from('site_settings').update({
     recruitment_enabled: value.recruitmentEnabled,
     recruitment_cohort: value.recruitmentCohort,
-    recruitment_count: value.recruitmentCount,
     recruitment_form_url: value.recruitmentFormUrl,
     recruitment_closed_message: value.recruitmentClosedMessage,
     activity_cohorts: value.activityCohorts,

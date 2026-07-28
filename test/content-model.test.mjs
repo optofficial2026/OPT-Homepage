@@ -2,18 +2,24 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import {
+  completeDetail,
   defaultContent,
   displayDate,
-  formatStat,
-  normalizeStat,
+  emptyHackathonDetail,
+  emptySeminarDetail,
   sortTimelineNewestFirst,
   validateSlug,
 } from '../src/data/content.ts';
 
-test('statistics stay in the non-negative integer plus format', () => {
-  assert.equal(normalizeStat(-2), 0);
-  assert.equal(normalizeStat(4.8), 4);
-  assert.equal(formatStat(11), '11+');
+test('stored detail is completed so pages never map over a missing field', () => {
+  const hackathon = completeDetail('hackathon', { tagline: '요약만 있는 행' });
+  assert.deepEqual(hackathon, { ...emptyHackathonDetail, tagline: '요약만 있는 행' });
+  assert.deepEqual(hackathon.techStack, []);
+  assert.deepEqual(hackathon.features, []);
+
+  assert.deepEqual(completeDetail('seminar', null), emptySeminarDetail);
+  assert.deepEqual(completeDetail('seminar', []), emptySeminarDetail);
+  assert.equal(completeDetail('seminar', { format: 'NOTE' }).format, 'NOTE');
 });
 
 test('timeline is sorted newest first without mutating the input', () => {

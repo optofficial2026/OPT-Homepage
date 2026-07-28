@@ -1,4 +1,4 @@
-import { defaultContent, sortTimelineNewestFirst } from '../data/content';
+import { completeDetail, defaultContent, sortTimelineNewestFirst } from '../data/content';
 import type { ActivityPost, ArchiveItem, SiteContent, SiteSettings, TimelineItem } from '../data/types';
 import { readContentCache, writeContentCache } from './content-cache';
 import { supabase } from './supabase';
@@ -9,7 +9,6 @@ export type ContentResult = { data: SiteContent; source: Source; error: string }
 const settingsFromRow = (row: Record<string, unknown>): SiteSettings => ({
   recruitmentEnabled: Boolean(row.recruitment_enabled),
   recruitmentCohort: Number(row.recruitment_cohort),
-  recruitmentCount: Number(row.recruitment_count),
   recruitmentFormUrl: String(row.recruitment_form_url ?? ''),
   recruitmentClosedMessage: String(row.recruitment_closed_message ?? ''),
   activityCohorts: Number(row.activity_cohorts),
@@ -38,17 +37,20 @@ const activityFromRow = (row: Record<string, unknown>): ActivityPost => ({
   galleryUrls: Array.isArray(row.gallery_urls) ? row.gallery_urls.map(String) : [],
 });
 
-const archiveFromRow = (row: Record<string, unknown>): ArchiveItem => ({
-  id: String(row.id),
-  slug: String(row.slug),
-  kind: row.kind as ArchiveItem['kind'],
-  cohort: Number(row.cohort),
-  occurredOn: String(row.occurred_on),
-  title: String(row.title),
-  summary: String(row.summary ?? ''),
-  thumbnailUrl: String(row.thumbnail_url ?? ''),
-  detail: row.detail as ArchiveItem['detail'],
-});
+const archiveFromRow = (row: Record<string, unknown>): ArchiveItem => {
+  const kind = row.kind as ArchiveItem['kind'];
+  return {
+    id: String(row.id),
+    slug: String(row.slug),
+    kind,
+    cohort: Number(row.cohort),
+    occurredOn: String(row.occurred_on),
+    title: String(row.title),
+    summary: String(row.summary ?? ''),
+    thumbnailUrl: String(row.thumbnail_url ?? ''),
+    detail: completeDetail(kind, row.detail),
+  };
+};
 
 export async function loadSiteContent(): Promise<ContentResult> {
   if (supabase) {

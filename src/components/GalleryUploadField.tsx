@@ -1,4 +1,5 @@
 import { useRef, useState, type ChangeEvent } from 'react';
+import type { UploadPendingChange } from '../hooks/useEditorSafety';
 import {
   MAX_GALLERY_IMAGES,
   galleryLimitError,
@@ -12,9 +13,16 @@ type Props = {
   folder: string;
   value?: string[];
   description: string;
+  onUploadPendingChange?: UploadPendingChange;
 };
 
-export default function GalleryUploadField({ name, folder, value = [], description }: Props) {
+export default function GalleryUploadField({
+  name,
+  folder,
+  value = [],
+  description,
+  onUploadPendingChange,
+}: Props) {
   const [urls, setUrls] = useState(value.slice(0, MAX_GALLERY_IMAGES));
   const [status, setStatus] = useState('');
   const [uploading, setUploading] = useState(false);
@@ -32,6 +40,7 @@ export default function GalleryUploadField({ name, folder, value = [], descripti
 
     setUploading(true);
     setStatus('업로드 중…');
+    onUploadPendingChange?.(1);
     let nextUrls = [...urls];
     try {
       for (const file of files) {
@@ -45,6 +54,7 @@ export default function GalleryUploadField({ name, folder, value = [], descripti
       setStatus(reason instanceof Error ? reason.message : '업로드 실패');
     } finally {
       setUploading(false);
+      onUploadPendingChange?.(-1);
       input.value = '';
     }
   };

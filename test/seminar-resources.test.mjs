@@ -2,12 +2,13 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import {
+  externalResourceError,
   MAX_SEMINAR_RESOURCES,
   resourceAction,
   resourceLimitError,
   visibleSeminarResources,
 } from '../src/lib/seminar-resources.ts';
-import { resourceFileError } from '../src/lib/resource-storage.ts';
+import { resourceFileError, resourceTitle } from '../src/lib/resource-storage.ts';
 
 test('seminar resources are limited to five', () => {
   assert.equal(MAX_SEMINAR_RESOURCES, 5);
@@ -19,6 +20,32 @@ test('resource uploads accept only PDF and PowerPoint files up to twenty megabyt
   assert.equal(resourceFileError({ type: 'application/pdf', size: 20 * 1024 * 1024 }), '');
   assert.match(resourceFileError({ type: 'video/mp4', size: 100 }), /PDF/);
   assert.match(resourceFileError({ type: 'application/pdf', size: 20 * 1024 * 1024 + 1 }), /20MB/);
+  assert.equal(resourceFileError({ type: '', size: 100, name: 'week3.pptx' }), '');
+});
+
+test('quick upload buttons accept only their matching file type', () => {
+  const pdf = { type: 'application/pdf', size: 100, name: 'week3.pdf' };
+  const slides = { type: '', size: 100, name: 'week3.pptx' };
+
+  assert.equal(resourceFileError(pdf, 'PDF'), '');
+  assert.match(resourceFileError(pdf, 'SLIDE'), /PPT/);
+  assert.equal(resourceFileError(slides, 'SLIDE'), '');
+  assert.match(resourceFileError(slides, 'PDF'), /PDF/);
+});
+
+test('uploaded resource titles come from the file name without its extension', () => {
+  assert.equal(resourceTitle('week3.transformer.pdf'), 'week3.transformer');
+  assert.equal(resourceTitle('.pdf'), '세미나 자료');
+});
+
+test('external resources require a title, web URL, and unique destination', () => {
+  assert.match(externalResourceError([], '', 'https://example.com'), /제목/);
+  assert.match(externalResourceError([], '발표 영상', 'ftp://example.com'), /http/);
+  assert.equal(externalResourceError([], '발표 영상', 'https://example.com/video'), '');
+  assert.match(
+    externalResourceError([{ url: 'https://example.com/video' }], '발표 영상', 'https://example.com/video'),
+    /이미/,
+  );
 });
 
 test('legacy seminar links remain visible as web resources', () => {

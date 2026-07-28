@@ -22,7 +22,7 @@ npm run build
 The site works with bundled content when Supabase is not configured.
 
 1. Sign in with the **OPT official account** and create the Supabase project under that account. Do not leave the project owned only by an individual member.
-2. Run `supabase/migrations/20260727000000_initial_content.sql` in the SQL editor.
+2. Run every file in `supabase/migrations/` in filename order in the SQL editor.
 3. Create the OPT official administrator in **Authentication → Users**.
 4. Add that user's UUID to the allow-list:
 

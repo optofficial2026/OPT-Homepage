@@ -2,6 +2,8 @@ import assert from 'node:assert/strict';
 import { access, readFile } from 'node:fs/promises';
 import test from 'node:test';
 
+import { defaultContent } from '../src/data/content.ts';
+
 const read = (file) => readFile(new URL(`../${file}`, import.meta.url), 'utf8');
 const exists = async (file) => access(new URL(`../${file}`, import.meta.url)).then(() => true, () => false);
 
@@ -42,10 +44,11 @@ test('React pages own typed content, reveal behavior, and activity filtering', a
     read('src/components/Navigation.tsx'),
   ]);
 
-  assert.match(data, /export const activityLog/);
-  assert.match(data, /export const timeline/);
-  assert.match(data, /export const seminars/);
-  assert.match(data, /export const hackathons/);
+  assert.match(data, /export const defaultContent/);
+  assert.ok(defaultContent.activities.length > 0);
+  assert.ok(defaultContent.timeline.length > 0);
+  assert.ok(defaultContent.archives.some(({ kind }) => kind === 'seminar'));
+  assert.ok(defaultContent.archives.some(({ kind }) => kind === 'hackathon'));
   assert.match(home, /useEffect/);
   assert.match(log, /content\.activities\.filter/);
   assert.match(archive, /visibleHackathons\.map/);
@@ -59,6 +62,7 @@ test('activity log and archive can filter materials by cohort', async () => {
     read('src/pages/ArchivePage.tsx'),
   ]);
 
+  assert.ok(defaultContent.activities.every(({ cohort }) => cohort === 1));
   assert.match(data, /cohort: '1기'/);
   assert.match(log, /cohortFilter/);
   assert.match(log, /item\.cohort/);
@@ -244,15 +248,11 @@ test('seminar material format can be edited and is shown in the archive list', a
 });
 
 test('seminar details present descriptive resource cards instead of a generic link', async () => {
-  const [detail, editor] = await Promise.all([
-    read('src/pages/SeminarDetailPage.tsx'),
-    read('src/components/SeminarResourcesField.tsx'),
-  ]);
+  const detail = await read('src/pages/SeminarDetailPage.tsx');
   assert.match(detail, /visibleSeminarResources/);
   assert.match(detail, /resourceAction/);
   assert.match(detail, /aria-label/);
   assert.doesNotMatch(detail, />자료 보기 ↗</);
-  assert.match(editor, /PDF·PPT 파일 직접 올리기/);
 });
 
 test('all detail pages keep section headings and pending copy for empty content', async () => {
@@ -305,8 +305,8 @@ test('content editors explain image placement and use file-first gallery control
     assert.match(editor, /GalleryUploadField/);
     assert.doesNotMatch(editor, /갤러리 URL/);
   }
-  assert.match(activity, /주소 이름 \(영문\)/);
-  assert.match(archive, /주소 이름 \(영문\)/);
+  assert.match(activity, /고급 설정/);
+  assert.match(archive, /고급 설정/);
 });
 
 test('losing administrator membership also exits edit mode', async () => {
@@ -319,4 +319,56 @@ test('missing remote settings do not discard remote content lists', async () => 
   const repository = await read('src/lib/content-repository.ts');
   assert.match(repository, /from\('site_settings'\)\.select\('\*'\)\.maybeSingle\(\)/);
   assert.match(repository, /settings: settings\.data \? settingsFromRow\(settings\.data\) : defaultContent\.settings/);
+});
+
+test('editors protect drafts and wait for uploads before saving', async () => {
+  const [activity, archive, home, safety, image, gallery, resources, styles] = await Promise.all([
+    read('src/components/ActivityEditor.tsx'),
+    read('src/components/ArchiveEditor.tsx'),
+    read('src/components/HomeEditors.tsx'),
+    read('src/hooks/useEditorSafety.ts'),
+    read('src/components/ImageUploadField.tsx'),
+    read('src/components/GalleryUploadField.tsx'),
+    read('src/components/SeminarResourcesField.tsx'),
+    read('src/index.css'),
+  ]);
+
+  for (const editor of [activity, archive]) {
+    assert.match(editor, /useEditorSafety/);
+    assert.match(editor, /pendingUploads > 0/);
+    assert.match(editor, /disabled=\{isSaving \|\| pendingUploads > 0\}/);
+    assert.match(editor, /className="editor-actions"/);
+  }
+  assert.equal((home.match(/= useEditorSafety\(close\)/g) ?? []).length, 2);
+  assert.equal((home.match(/disabled=\{isSaving\}/g) ?? []).length, 2);
+  assert.match(safety, /if \(isSaving \|\| pendingUploads > 0\) return/);
+  for (const upload of [image, gallery, resources]) {
+    assert.match(upload, /onUploadPendingChange/);
+  }
+  assert.match(image, /disabled=\{uploading\}/);
+  assert.match(styles, /\.editor-actions\{[^}]*position:sticky/);
+});
+
+test('seminar resources use separate quick actions for files and external links', async () => {
+  const resources = await read('src/components/SeminarResourcesField.tsx');
+
+  assert.match(resources, /PDF 올리기/);
+  assert.match(resources, /PPT 올리기/);
+  assert.match(resources, /외부 링크 추가/);
+  assert.match(resources, />수정</);
+  assert.doesNotMatch(resources, /PDF·PPT 파일 직접 올리기/);
+});
+
+test('new content receives an automatic slug while existing slugs stay editable', async () => {
+  const [activity, archive] = await Promise.all([
+    read('src/components/ActivityEditor.tsx'),
+    read('src/components/ArchiveEditor.tsx'),
+  ]);
+
+  assert.match(activity, /activity-\$\{crypto\.randomUUID\(\)\}/);
+  assert.match(archive, /\$\{kind\}-\$\{crypto\.randomUUID\(\)\}/);
+  for (const editor of [activity, archive]) {
+    assert.match(editor, /type="hidden"/);
+    assert.match(editor, /고급 설정/);
+  }
 });

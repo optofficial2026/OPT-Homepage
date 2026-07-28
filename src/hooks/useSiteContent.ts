@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
 import { defaultContent } from '../data/content';
 import type { SiteContent } from '../data/types';
+import { readContentCache } from '../lib/content-cache';
 import { loadSiteContent } from '../lib/content-repository';
 
 export function useSiteContent() {
-  const [data, setData] = useState<SiteContent>(defaultContent);
+  // Starting from the cache keeps bundled placeholder content off the screen on repeat visits.
+  const [data, setData] = useState<SiteContent>(() => readContentCache(localStorage) ?? defaultContent);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
