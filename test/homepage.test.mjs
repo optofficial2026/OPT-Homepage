@@ -211,7 +211,9 @@ test('uses dark logo variants in navigation and footer and white logo in hero', 
   assert.match(home, /opt로고 화이트모드\.png/);
   assert.match(home, /src=\{optLogo\}/);
   assert.match(styles, /\.brand-mark img\{[^}]*object-fit:contain[^}]*mix-blend-mode:screen/);
+  assert.match(styles, /\.brand-mark\{[^}]*border-radius:8px/);
   assert.match(styles, /\.footer-logo\{[^}]*mix-blend-mode:screen/);
+  assert.match(styles, /\.footer-logo\{[^}]*border-radius:8px/);
 });
 
 test('administrator access stays inline and verifies database membership', async () => {
