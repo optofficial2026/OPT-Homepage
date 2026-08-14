@@ -88,7 +88,8 @@ export default function ActivityEditor({ value, close }: { value?: ActivityPost;
         name="thumbnailUrl"
         folder="activity"
         value={value?.thumbnailUrl}
-        description="활동 기록 목록 카드에 보이는 작은 사진입니다."
+        description="활동 기록 목록 카드에 표시됩니다. 16:9 비율로 가운데 기준 자동 crop됩니다."
+        crop="thumbnail"
         onUploadPendingChange={onUploadPendingChange}
       />
     </fieldset>
@@ -111,7 +112,7 @@ export default function ActivityEditor({ value, close }: { value?: ActivityPost;
         name="galleryUrls"
         folder="activity"
         value={value?.galleryUrls}
-        description="상세 페이지의 ‘활동 사진’에 표시됩니다. 최대 5장입니다."
+        description="상세 페이지의 ‘활동 사진’에 표시됩니다. 최대 5장, 장당 10MB 이하입니다."
         onUploadPendingChange={onUploadPendingChange}
       />
     </fieldset>

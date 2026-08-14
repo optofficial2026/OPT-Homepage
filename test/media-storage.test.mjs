@@ -8,6 +8,7 @@ import {
   mediaError,
   mediaPathFromUrl,
   safeMediaPath,
+  thumbnailCropRect,
 } from '../src/lib/media-storage.ts';
 
 test('media validation accepts web images up to ten megabytes', () => {
@@ -24,6 +25,15 @@ test('gallery accepts no more than five images', () => {
   assert.equal(MAX_GALLERY_IMAGES, 5);
   assert.equal(galleryLimitError(2, 3), '');
   assert.match(galleryLimitError(3, 3), /최대 5장/);
+});
+
+test('thumbnail crop keeps a centered sixteen-by-nine frame', () => {
+  assert.deepEqual(thumbnailCropRect(1600, 1200), {
+    x: 0, y: 150, width: 1600, height: 900,
+  });
+  assert.deepEqual(thumbnailCropRect(2400, 900), {
+    x: 400, y: 0, width: 1600, height: 900,
+  });
 });
 
 test('storage paths do not reuse user filenames', () => {

@@ -43,7 +43,7 @@ export default function LogPage() {
       </div>
       <div className="log-grid">{entries.map((item, index) => <article className="log-card" key={item.id}>
         <a href={`${sitePath('/log/')}?id=${encodeURIComponent(item.slug)}`}>
-          <div className={`image-slot slot-${index % 3}`} style={item.thumbnailUrl ? { backgroundImage: `url(${item.thumbnailUrl})`, backgroundSize: 'cover' } : undefined}>
+          <div className={`image-slot slot-${index % 3}`} style={item.thumbnailUrl ? { backgroundImage: `url(${item.thumbnailUrl})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' } : undefined}>
             <span className={`tag tag-${item.tag.toLowerCase()}`}>{item.tag as ActivityTag}</span><span>{displayDate(item.occurredOn)}</span>
           </div>
           <div className="log-copy"><p>{displayDate(item.occurredOn)}</p><h2>{item.title}</h2><div>{item.summary}</div></div>
