@@ -2,6 +2,7 @@ import { useRef, useState, type ChangeEvent } from 'react';
 import type { UploadPendingChange } from '../hooks/useEditorSafety';
 import {
   MAX_GALLERY_IMAGES,
+  MAX_IMAGE_SIZE_MB,
   galleryLimitError,
   mediaError,
   removeMedia,
@@ -83,7 +84,7 @@ export default function GalleryUploadField({
       사진 선택 ({MAX_GALLERY_IMAGES - urls.length}장 추가 가능)
       <input type="file" multiple accept="image/jpeg,image/png,image/webp" disabled={uploading || urls.length >= MAX_GALLERY_IMAGES} onChange={uploadFiles} />
     </label>
-    <small>JPEG, PNG, WebP · 장당 5MB 이하</small>
+    <small>JPEG, PNG, WebP · 장당 {MAX_IMAGE_SIZE_MB}MB 이하</small>
     {status && <small className="upload-status">{status}</small>}
   </div>;
 }
