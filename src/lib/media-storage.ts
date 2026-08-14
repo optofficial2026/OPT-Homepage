@@ -6,6 +6,17 @@ const EXTENSIONS: Record<string, string> = { 'image/jpeg': 'jpg', 'image/png': '
 export const MAX_GALLERY_IMAGES = 5;
 export const MAX_IMAGE_SIZE_MB = 10;
 
+const THUMBNAIL_ASPECT_RATIO = 16 / 9;
+
+export const thumbnailCropRect = (width: number, height: number) => {
+  if (width / height > THUMBNAIL_ASPECT_RATIO) {
+    const cropWidth = height * THUMBNAIL_ASPECT_RATIO;
+    return { x: (width - cropWidth) / 2, y: 0, width: cropWidth, height };
+  }
+  const cropHeight = width / THUMBNAIL_ASPECT_RATIO;
+  return { x: 0, y: (height - cropHeight) / 2, width, height: cropHeight };
+};
+
 export const galleryLimitError = (currentCount: number, incomingCount: number) =>
   currentCount + incomingCount > MAX_GALLERY_IMAGES
     ? `상세 사진은 최대 ${MAX_GALLERY_IMAGES}장까지 올릴 수 있습니다.`

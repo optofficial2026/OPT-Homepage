@@ -121,7 +121,8 @@ export default function ArchiveEditor({ value, kind, close }: { value?: ArchiveI
         name="thumbnailUrl"
         folder="archive"
         value={value?.thumbnailUrl}
-        description="아카이브 목록 카드에 보이는 작은 사진입니다."
+        description="아카이브 목록 카드에 표시됩니다. 16:9 비율로 가운데 기준 자동 crop됩니다."
+        crop="thumbnail"
         onUploadPendingChange={onUploadPendingChange}
       />
     </fieldset>
@@ -149,7 +150,7 @@ export default function ArchiveEditor({ value, kind, close }: { value?: ArchiveI
           name="galleryUrls"
           folder="archive"
           value={seminar?.galleryUrls}
-          description="상세 페이지의 ‘세미나 사진’에 표시됩니다. 최대 5장입니다."
+          description="상세 페이지의 ‘세미나 사진’에 표시됩니다. 최대 5장, 장당 10MB 이하입니다."
           onUploadPendingChange={onUploadPendingChange}
         />
       </fieldset>
@@ -181,7 +182,7 @@ export default function ArchiveEditor({ value, kind, close }: { value?: ArchiveI
           name="galleryUrls"
           folder="archive"
           value={hackathon?.galleryUrls}
-          description="상세 페이지의 ‘프로젝트 화면’에 표시됩니다. 최대 5장입니다."
+          description="상세 페이지의 ‘프로젝트 화면’에 표시됩니다. 최대 5장, 장당 10MB 이하입니다."
           onUploadPendingChange={onUploadPendingChange}
         />
         <label>개발 과정 (한 줄에 하나)<textarea name="process" defaultValue={hackathon?.process.join('\n')} /></label>

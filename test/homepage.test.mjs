@@ -306,6 +306,25 @@ test('all image upload fields advertise the shared ten-megabyte limit', async ()
   }
 });
 
+test('thumbnail uploads crop to the list ratio and editors explain image limits', async () => {
+  const [field, activity, archive, log, styles] = await Promise.all([
+    read('src/components/ImageUploadField.tsx'),
+    read('src/components/ActivityEditor.tsx'),
+    read('src/components/ArchiveEditor.tsx'),
+    read('src/pages/LogPage.tsx'),
+    read('src/index.css'),
+  ]);
+
+  assert.match(field, /crop\?: 'thumbnail'/);
+  assert.match(field, /thumbnailCropRect/);
+  assert.match(activity, /crop="thumbnail"/);
+  assert.match(archive, /crop="thumbnail"/);
+  assert.match(activity, /장당 10MB 이하/);
+  assert.match(archive, /장당 10MB 이하/);
+  assert.match(log, /backgroundSize: 'cover'/);
+  assert.match(styles, /\.image-slot\{[^}]*aspect-ratio:16\/9/);
+});
+
 test('content editors explain image placement and use file-first gallery controls', async () => {
   const [activity, archive] = await Promise.all([
     read('src/components/ActivityEditor.tsx'),
