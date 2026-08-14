@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { sortTimelineNewestFirst } from '../data/content';
-import optLogo from '../../opt-logo.png';
+import optLogo from '../../opt로고 화이트모드.png';
 import { SettingsEditor, TimelineEditor } from '../components/HomeEditors';
 import { useSite } from '../components/SiteContext';
 import { deleteTimelineItem } from '../lib/content-mutations';

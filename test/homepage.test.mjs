@@ -135,7 +135,7 @@ test('home reflects OPT second-generation recruiting and study-first messaging',
     read('src/index.css'),
   ]);
 
-  assert.match(home, /opt-logo\.png/);
+  assert.match(home, /opt로고 화이트모드\.png/);
   assert.match(home, /className="hero-logo/);
   assert.match(home, /settings\.recruitmentCohort.*기 부원 모집 중/);
   assert.match(home, /settings\.activityCohorts/);
@@ -161,7 +161,7 @@ test('home reflects the confirmed OPT identity and second-cohort recruiting copy
     read('src/index.css'),
   ]);
 
-  assert.match(home, /opt-logo\.png/);
+  assert.match(home, /opt로고 화이트모드\.png/);
   assert.match(home, /className="hero-logo/);
   assert.match(home, /settings\.activityCohorts/);
   assert.match(home, /settings\.activityPrograms/);
@@ -192,6 +192,26 @@ test('home reflects the confirmed OPT identity and second-cohort recruiting copy
   assert.match(styles, /\.hero h1\{line-height:1\.02/);
   assert.match(styles, /@media\(min-width:761px\)\{\.hero-content\{padding-left:min\(40vw,500px\)/);
   assert.match(styles, /\.stats\{position:absolute;top:370px;left:0;width:340px;height:368px;grid-template-columns:1fr/);
+});
+
+test('uses dark logo variants in navigation and footer and white logo in hero', async () => {
+  const [app, home, navigation, styles] = await Promise.all([
+    read('src/App.tsx'),
+    read('src/pages/HomePage.tsx'),
+    read('src/components/Navigation.tsx'),
+    read('src/index.css'),
+  ]);
+
+  assert.equal(await exists('opt로고 다크모드.png'), true);
+  assert.equal(await exists('opt로고 화이트모드.png'), true);
+  assert.match(navigation, /opt로고 다크모드\.png/);
+  assert.match(navigation, /src=\{optLogo\}/);
+  assert.match(app, /opt로고 다크모드\.png/);
+  assert.match(app, /className="footer-logo"/);
+  assert.match(home, /opt로고 화이트모드\.png/);
+  assert.match(home, /src=\{optLogo\}/);
+  assert.match(styles, /\.brand-mark img\{[^}]*object-fit:contain[^}]*mix-blend-mode:screen/);
+  assert.match(styles, /\.footer-logo\{[^}]*mix-blend-mode:screen/);
 });
 
 test('administrator access stays inline and verifies database membership', async () => {
