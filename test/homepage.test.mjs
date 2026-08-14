@@ -294,6 +294,18 @@ test('gallery image input supports five file previews without exposing URL entry
   assert.match(field, /removeMedia/);
 });
 
+test('all image upload fields advertise the shared ten-megabyte limit', async () => {
+  const [single, gallery] = await Promise.all([
+    read('src/components/ImageUploadField.tsx'),
+    read('src/components/GalleryUploadField.tsx'),
+  ]);
+
+  for (const field of [single, gallery]) {
+    assert.match(field, /MAX_IMAGE_SIZE_MB/);
+    assert.doesNotMatch(field, /5MB/);
+  }
+});
+
 test('content editors explain image placement and use file-first gallery controls', async () => {
   const [activity, archive] = await Promise.all([
     read('src/components/ActivityEditor.tsx'),

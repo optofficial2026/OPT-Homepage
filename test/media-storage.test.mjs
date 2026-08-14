@@ -3,16 +3,21 @@ import test from 'node:test';
 
 import {
   MAX_GALLERY_IMAGES,
+  MAX_IMAGE_SIZE_MB,
   galleryLimitError,
   mediaError,
   mediaPathFromUrl,
   safeMediaPath,
 } from '../src/lib/media-storage.ts';
 
-test('media validation accepts web images up to five megabytes', () => {
-  assert.equal(mediaError({ type: 'image/webp', size: 5 * 1024 * 1024 }), '');
+test('media validation accepts web images up to ten megabytes', () => {
+  const tenMegabytes = MAX_IMAGE_SIZE_MB * 1024 * 1024;
+
+  assert.equal(MAX_IMAGE_SIZE_MB, 10);
+  assert.equal(mediaError({ type: 'image/webp', size: tenMegabytes }), '');
+  assert.equal(mediaError({ type: 'image/jpeg', size: tenMegabytes }), '');
   assert.match(mediaError({ type: 'image/gif', size: 100 }), /JPEG/);
-  assert.match(mediaError({ type: 'image/png', size: 5 * 1024 * 1024 + 1 }), /5MB/);
+  assert.match(mediaError({ type: 'image/png', size: tenMegabytes + 1 }), /10MB/);
 });
 
 test('gallery accepts no more than five images', () => {

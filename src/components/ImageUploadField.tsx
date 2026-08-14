@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { UploadPendingChange } from '../hooks/useEditorSafety';
-import { removeMedia, uploadMedia } from '../lib/media-storage';
+import { MAX_IMAGE_SIZE_MB, removeMedia, uploadMedia } from '../lib/media-storage';
 
 type Props = {
   label: string;
@@ -47,7 +47,7 @@ export default function ImageUploadField({
       finally { setUploading(false); onUploadPendingChange?.(-1); }
       }} />
     </label>
-    <small>JPEG, PNG, WebP · 5MB 이하</small>
+    <small>JPEG, PNG, WebP · 장당 {MAX_IMAGE_SIZE_MB}MB 이하</small>
     {url && <button className="upload-remove" type="button" onClick={clearImage}>사진 삭제</button>}
     {status && <small className="upload-status">{status}</small>}
   </div>;
