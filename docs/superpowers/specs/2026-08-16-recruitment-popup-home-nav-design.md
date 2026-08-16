@@ -9,7 +9,7 @@
 - 기존 `recruitmentEnabled`는 모집 상태와 모집 내용의 활성 여부로 유지한다.
 - `recruitmentPopupEnabled`를 별도 `SiteSettings` 필드로 추가한다.
 - 두 설정이 모두 켜진 경우에만 홈에서 팝업을 자동 표시한다.
-- 팝업 표시 여부는 `sessionStorage`의 고정 키로 관리한다. 팝업을 닫거나 ESC·배경을 누르면 현재 브라우저 세션에서 다시 표시하지 않는다.
+- 팝업 표시 여부는 `sessionStorage`의 고정 키로 관리한다. 팝업을 처음 표시하는 순간 현재 브라우저 세션의 표시 완료를 기록하고, 닫기·ESC·배경 클릭으로 팝업을 닫을 수 있다.
 - 모집 폼 링크가 있으면 팝업의 지원 버튼이 외부 링크를 열고, 없으면 기존처럼 비활성 버튼을 보여준다.
 - 기존 하단 `.recruit-banner`는 홈에서 제거한다. 상단 모집 ticker와 hero 모집 badge는 기존 동작을 유지한다.
 - 기존 `/` 홈 콘텐츠는 네비게이션에서 `홈`으로 표시한다.
@@ -28,10 +28,12 @@
 - `src/lib/content-repository.ts`, `src/lib/content-mutations.ts`: DB 읽기·쓰기 매핑
 - `src/components/HomeEditors.tsx`: 관리자 팝업 노출 토글
 - `src/components/RecruitmentPopup.tsx`: 세션당 1회 팝업 상태와 표시 UI
+- `src/components/SiteContext.tsx`: 원격 설정 로딩 완료 상태 전달
 - `src/pages/HomePage.tsx`: 하단 배너 제거와 팝업 연결
 - `src/pages/IntroPage.tsx`, `intro/index.html`: 빈 소개 화면
 - `src/App.tsx`, `src/components/Navigation.tsx`: 페이지 타입과 네비게이션 라벨·링크
-- `src/index.css`: 팝업과 빈 소개 화면 스타일, 제거된 배너의 미사용 스타일 정리
+- `src/index.css`: 빈 소개 화면의 최소 레이아웃 스타일
+- `styles.css`: 기존 공통 모달 스타일 재사용
 - `test/homepage.test.mjs`: 라우팅·설정·팝업 회귀 단언
 - `supabase/migrations/20260816000000_add_recruitment_popup_setting.sql`: 운영 설정 컬럼
 
