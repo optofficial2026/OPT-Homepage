@@ -1,4 +1,4 @@
-import optLogo from '../../opt로고 다크모드.png';
+import optLogo from '../../opt 로고 거북이 다크모드.png';
 import { useSite } from './SiteContext';
 import { sitePath } from '../lib/paths';
 

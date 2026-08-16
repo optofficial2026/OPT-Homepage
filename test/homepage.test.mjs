@@ -116,7 +116,7 @@ test('home removes KPI cards, centers the hero logo, and gently emphasizes recru
   assert.match(styles, /\.hero-logo\{[^}]*top:50%[^}]*transform:translateY\(-50%\)/);
 });
 
-test('recruitment popup is session-scoped, home-only, and the old home banner is removed', async () => {
+test('recruitment popup opens on every home visit, stays home-only, and the old home banner is removed', async () => {
   const [app, popup, home, context] = await Promise.all([
     read('src/App.tsx'),
     read('src/components/RecruitmentPopup.tsx'),
@@ -125,9 +125,9 @@ test('recruitment popup is session-scoped, home-only, and the old home banner is
   ]);
 
   assert.match(popup, /contentLoading/);
-  assert.match(popup, /opt-recruitment-popup-seen/);
-  assert.match(popup, /sessionStorage\.getItem/);
-  assert.match(popup, /sessionStorage\.setItem/);
+  assert.doesNotMatch(popup, /opt-recruitment-popup-seen/);
+  assert.doesNotMatch(popup, /sessionStorage/);
+  assert.match(popup, /setOpen\(true\)/);
   assert.match(popup, /role="dialog"/);
   assert.match(popup, /aria-modal="true"/);
   assert.match(popup, /event\.key === 'Escape'/);
@@ -247,13 +247,14 @@ test('home reflects OPT second-generation recruiting and study-first messaging',
     read('src/index.css'),
   ]);
 
-  assert.match(home, /opt로고 화이트모드\.png/);
+  assert.match(home, /opt 로고 거북이 화이트 모드\.png/);
   assert.match(home, /className="hero-logo/);
   assert.match(home, /settings\.recruitmentCohort.*기 부원 모집 중/);
   assert.match(home, /피드백으로 성장/);
   assert.doesNotMatch(home, /결과물로 확장/);
   assert.match(home, /주제는 당일 공개/);
-  assert.match(popup, /AI를 공부하고 친숙해지고 싶지만 막막한 당신/);
+  assert.match(popup, /AI를 공부하고 싶은데 막막한 당신/);
+  assert.doesNotMatch(popup, /친숙해지고/);
   assert.match(popup, /<button className="button dark" type="button" disabled>지원하기<\/button>/);
   assert.match(app, /settings\.recruitmentCohort.*기 부원 모집 중/);
   assert.match(content, /2026\.09/);
@@ -271,7 +272,7 @@ test('home reflects the confirmed OPT identity and second-cohort recruiting copy
     read('src/index.css'),
   ]);
 
-  assert.match(home, /opt로고 화이트모드\.png/);
+  assert.match(home, /opt 로고 거북이 화이트 모드\.png/);
   assert.match(home, /className="hero-logo/);
   assert.match(home, /기술과 논문/);
   assert.match(home, /주도적으로 AI 이론/);
@@ -308,19 +309,38 @@ test('uses dark logo variants in navigation and footer and white logo in hero', 
     read('src/index.css'),
   ]);
 
-  assert.equal(await exists('opt로고 다크모드.png'), true);
-  assert.equal(await exists('opt로고 화이트모드.png'), true);
-  assert.match(navigation, /opt로고 다크모드\.png/);
+  assert.equal(await exists('opt 로고 거북이 다크모드.png'), true);
+  assert.equal(await exists('opt 로고 거북이 화이트 모드.png'), true);
+  assert.match(navigation, /opt 로고 거북이 다크모드\.png/);
   assert.match(navigation, /src=\{optLogo\}/);
-  assert.match(app, /opt로고 다크모드\.png/);
+  assert.match(app, /opt 로고 거북이 다크모드\.png/);
   assert.match(app, /className="footer-logo"/);
-  assert.match(home, /opt로고 화이트모드\.png/);
+  assert.match(home, /opt 로고 거북이 화이트 모드\.png/);
   assert.match(home, /src=\{optLogo\}/);
-  assert.match(styles, /\.brand-mark img\{[^}]*object-fit:contain[^}]*mix-blend-mode:screen/);
-  assert.match(styles, /\.brand-mark img\{[^}]*border-radius:8px/);
-  assert.match(styles, /\.brand-mark\{[^}]*border-radius:8px/);
-  assert.match(styles, /\.footer-logo\{[^}]*mix-blend-mode:screen/);
-  assert.match(styles, /\.footer-logo\{[^}]*border-radius:8px/);
+  assert.match(styles, /\.brand-mark\{[^}]*overflow:hidden[^}]*border-radius:14px/);
+  assert.match(styles, /\.brand-mark img\{[^}]*object-fit:contain/);
+  assert.match(styles, /\.footer-logo\{[^}]*overflow:hidden[^}]*border-radius:14px/);
+  assert.match(styles, /\.hero-logo\{[^}]*overflow:hidden[^}]*border-radius:28px/);
+});
+
+test('recruitment copy, modal CTA layout, and editor link wiring remain available', async () => {
+  const [popup, styles, editor, mutations, repository] = await Promise.all([
+    read('src/components/RecruitmentPopup.tsx'),
+    read('src/index.css'),
+    read('src/components/HomeEditors.tsx'),
+    read('src/lib/content-mutations.ts'),
+    read('src/lib/content-repository.ts'),
+  ]);
+
+  assert.match(popup, /AI를 공부하고 싶은데 막막한 당신/);
+  assert.doesNotMatch(popup, /친숙해지고/);
+  assert.match(styles, /\.modal-box\{[^}]*text-align:center/);
+  assert.match(styles, /\.modal-actions\{[^}]*justify-content:center/);
+  assert.match(styles, /recruitment-popup-cta/);
+  assert.match(editor, /name="recruitmentFormUrl"/);
+  assert.match(editor, /recruitmentFormUrl: String\(form\.get\('recruitmentFormUrl'\)\)/);
+  assert.match(mutations, /recruitment_form_url: value\.recruitmentFormUrl/);
+  assert.match(repository, /recruitmentFormUrl: String\(row\.recruitment_form_url/);
 });
 
 test('administrator access stays inline and verifies database membership', async () => {
