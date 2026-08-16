@@ -64,6 +64,43 @@ test('home and intro routes keep the shared shell while introducing a blank intr
   assert.match(intro, /<main className="intro-page" aria-label="소개" \/>/);
 });
 
+test('intro page follows the supplied about design without an intro recruitment CTA', async () => {
+  const intro = await read('src/pages/IntroPage.tsx');
+
+  for (const label of ['// ABOUT OPT', '01 / FABLE', '02 / HOW WE LEARN', '03 / WHY "OPT"']) {
+    assert.match(intro, new RegExp(label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  }
+  for (const copy of ['느리지만 멈추지 않고,', 'Global Optimum', '토끼와 거북이', '한 걸음씩', '더 깊게', 'Local이 아닌', 'Global로', '모델의 원리', '수학적 기반', '데이터', '구현 과정']) {
+    assert.match(intro, new RegExp(copy));
+  }
+  assert.match(intro, /about-hero\.png/);
+  assert.match(intro, /import\.meta\.env\.BASE_URL/);
+  assert.match(intro, /<svg/);
+  assert.match(intro, /LOCAL OPTIMUM/);
+  assert.match(intro, /GLOBAL OPTIMUM/);
+  assert.doesNotMatch(intro, /JOIN THE DESCENT/);
+  assert.doesNotMatch(intro, /같이 내려갈 사람을 찾습니다/);
+  assert.doesNotMatch(intro, /6기 지원하기/);
+});
+
+test('home removes KPI cards, centers the hero logo, and gently emphasizes recruitment', async () => {
+  const [home, navigation, styles] = await Promise.all([
+    read('src/pages/HomePage.tsx'),
+    read('src/components/Navigation.tsx'),
+    read('src/index.css'),
+  ]);
+
+  assert.doesNotMatch(home, /className="stats"/);
+  assert.doesNotMatch(home, /data-count=/);
+  assert.doesNotMatch(home, /const counter = new IntersectionObserver/);
+  assert.match(home, /className="hero-logo"/);
+  assert.match(navigation, /className="button primary recruitment-cta"/);
+  assert.match(styles, /\.recruitment-cta\{/);
+  assert.match(styles, /recruitment-cta-pulse/);
+  assert.match(styles, /prefers-reduced-motion:reduce/);
+  assert.match(styles, /\.hero-logo\{[^}]*top:50%[^}]*transform:translateY\(-50%\)/);
+});
+
 test('recruitment popup is session-scoped and the old home banner is removed', async () => {
   const [popup, home, context] = await Promise.all([
     read('src/components/RecruitmentPopup.tsx'),
