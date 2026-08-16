@@ -18,6 +18,7 @@
 - 900px 이하에서 본문 2열을 1열로, 히어로 이미지는 데스크톱 460px·모바일 280px 높이로 표시한다.
 - 새 의존성, 데이터베이스 변경, 관리자 편집 기능, iframe은 추가하지 않는다.
 - 홈의 KPI 설정 데이터와 관리자 입력 UI는 유지하고 홈 화면 노출·카운터만 제거한다.
+- 모집 팝업은 기존처럼 홈 진입 시 `HomePage`에서만 표시하며, 소개·활동기록·아카이브 라우트로 표시 범위를 확장하지 않는다.
 - 공통 상단 지원 버튼의 링크·비활성 동작은 유지하고 `.recruitment-cta` 글로우만 추가한다.
 - 지원 버튼 모션은 3초 이상 주기의 저강도 글로우이며 `prefers-reduced-motion: reduce`에서 정지한다.
 - 구현 전에 테스트를 먼저 작성하고 `npm test`에서 새 테스트가 실패하는 것을 확인한다.
@@ -97,6 +98,7 @@ git commit -m "test: define supplied intro page structure"
 - Modify: `src/pages/HomePage.tsx`
 - Modify: `src/components/Navigation.tsx`
 - Modify: `src/index.css`
+- Modify: `test/homepage.test.mjs`
 
 **Interfaces:**
 - Consumes: Task 1의 정적 구조 테스트, 기존 CSS 토큰·`wrap`·`reveal` 패턴, 공통 `App` 셸
@@ -161,6 +163,8 @@ export default function IntroPage() {
 `HomePage.tsx`에서는 KPI `<div className="stats">`와 이를 위한 숫자 `IntersectionObserver`를 제거한다. `activityCohorts`, `activityPrograms`, `activityMembers` 설정 필드와 관리자 편집 UI는 건드리지 않는다. 데스크톱 홈 로고는 KPI가 있던 왼쪽 영역을 채우도록 `top:50%`, `transform:translateY(-50%) rotate(3deg)` 기준으로 조정하고 모바일 규칙은 기존 static 배치를 유지한다.
 
 `Navigation.tsx`의 모집 링크와 비활성 버튼 모두에 `recruitment-cta` 클래스를 추가한다. `src/index.css`에 `recruitment-cta-pulse`와 외곽 링 keyframe을 추가하되, `prefers-reduced-motion: reduce`에서 해당 애니메이션을 해제한다.
+
+기존 `test/homepage.test.mjs`에서 빈 소개 페이지, KPI 카드·카운터 존재, 정확히 두 클래스인 모집 버튼을 전제로 한 정적 기대값을 현재 요구사항으로 갱신한다. 공통 셸 테스트는 `intro-page`와 `intro-hero`가 존재하는지 확인하고, 모집 버튼 테스트는 `recruitment-cta` 클래스가 추가된 현재 형태를 확인한다. 홈 카피 테스트는 KPI 설정 보존 검증을 Task 1의 계약 assertion에 맡기고 홈 렌더링에서 KPI 마크업·카운터를 요구하지 않도록 한다. 동적 observer 테스트는 reveal observer와 timeline 의존성만 확인한다. 기존 홈 전용 모집 팝업은 `HomePage`에 남긴다.
 
 - [ ] **Step 3: Add scoped styling**
 
