@@ -29,6 +29,21 @@ test('all routes mount the shared React entry with a page marker', async () => {
   }
 });
 
+test('every route ships a link preview card', async () => {
+  const routes = [['index.html', '/'], ['intro/index.html', '/intro/'], ['log/index.html', '/log/'], ['archive/index.html', '/archive/']];
+
+  assert.equal(await exists('public/og.png'), true);
+  for (const [file, path] of routes) {
+    const html = await read(file);
+    assert.match(html, /<meta name="description" content="[^"]+"/);
+    assert.match(html, /<meta property="og:title" content="[^"]+"/);
+    assert.match(html, /<meta property="og:description" content="[^"]+"/);
+    // Kakao and Slack only fetch absolute image URLs, never a relative one.
+    assert.match(html, /<meta property="og:image" content="https:\/\/[^"]+\/og\.png"/);
+    assert.match(html, new RegExp(`<meta property="og:url" content="https://[^"]+${path}"`));
+  }
+});
+
 test('recruitment popup visibility is part of the editable site settings contract', async () => {
   const [content, repository, mutations, editor, migration] = await Promise.all([
     read('src/data/content.ts'),

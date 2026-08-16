@@ -28,7 +28,7 @@ export default function ArchivePage() {
   const visibleHackathons = visible.filter((item) => item.kind === 'hackathon');
   const actions = (item: ArchiveItem) => isEditMode && <div className="inline-actions">
     <button onClick={() => setEditing(item)}>수정</button>
-    <button onClick={async () => { if (confirm('삭제할까요?')) { await deleteArchiveItem(item.id); await refetch(); } }}>삭제</button>
+    <button onClick={async () => { if (confirm('삭제할까요? 이 항목에 올린 사진과 자료 파일도 함께 지워집니다.')) { await deleteArchiveItem(item); await refetch(); } }}>삭제</button>
   </div>;
 
   return <>

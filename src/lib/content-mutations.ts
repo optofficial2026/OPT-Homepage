@@ -1,4 +1,5 @@
 import type { ActivityPost, ArchiveItem, SiteSettings, TimelineItem } from '../data/types';
+import { removeAllMedia } from './media-storage';
 import { supabase } from './supabase';
 
 const client = () => {
@@ -26,7 +27,12 @@ export async function updateSiteSettings(value: SiteSettings) {
 }
 
 export async function saveTimelineItem(value: TimelineItem) {
-  const row = { occurred_on: value.occurredOn, title: value.title, description: value.description };
+  const row = {
+    occurred_on: value.occurredOn,
+    sorted_on: value.sortedOn || null,
+    title: value.title,
+    description: value.description,
+  };
   const query = value.id.startsWith('timeline-')
     ? client().from('timeline_items').insert(row)
     : client().from('timeline_items').update(row).eq('id', value.id);
@@ -49,8 +55,10 @@ export async function saveActivityPost(value: ActivityPost) {
   fail(await query.select('id'));
 }
 
-export async function deleteActivityPost(id: string) {
-  fail(await client().from('activity_posts').delete().eq('id', id).select('id'));
+export async function deleteActivityPost(value: ActivityPost) {
+  fail(await client().from('activity_posts').delete().eq('id', value.id).select('id'));
+  // Best effort, and only after the row is gone: an orphaned file is worse than a retry.
+  await removeAllMedia(value as unknown as Record<string, unknown>);
 }
 
 export async function saveArchiveItem(value: ArchiveItem) {
@@ -64,6 +72,7 @@ export async function saveArchiveItem(value: ArchiveItem) {
   fail(await query.select('id'));
 }
 
-export async function deleteArchiveItem(id: string) {
-  fail(await client().from('archive_items').delete().eq('id', id).select('id'));
+export async function deleteArchiveItem(value: ArchiveItem) {
+  fail(await client().from('archive_items').delete().eq('id', value.id).select('id'));
+  await removeAllMedia(value as unknown as Record<string, unknown>);
 }

@@ -48,13 +48,17 @@ const hackathons: Hackathon[] = [
 
 export const displayDate = (value: string) => value.slice(0, 7).replace('-', '.');
 export const validateSlug = (slug: string) => /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug);
-const timelineKey = (value: string) => value
+// Rows saved before the sort date existed still carry the season wording, so keep guessing for those.
+const guessedKey = (value: string) => value
   .replace('년 하반기', '.12')
   .replace('년 여름방학', '.08')
   .replace('년 상반기', '.06')
-  .replace(/[.-]/g, '');
+  .replace(/[.-]/g, '')
+  .padEnd(8, '0');
+export const timelineSortKey = ({ sortedOn, occurredOn }: Pick<DynamicTimelineItem, 'sortedOn' | 'occurredOn'>) =>
+  sortedOn ? sortedOn.replace(/-/g, '') : guessedKey(occurredOn);
 export const sortTimelineNewestFirst = <T extends DynamicTimelineItem>(items: T[]) =>
-  [...items].sort((a, b) => timelineKey(b.occurredOn).localeCompare(timelineKey(a.occurredOn)));
+  [...items].sort((a, b) => timelineSortKey(b).localeCompare(timelineSortKey(a)));
 
 // Stored detail is free-form jsonb, so every reader starts from a complete shape.
 export const emptySeminarDetail: SeminarDetail = {
@@ -144,6 +148,7 @@ export const defaultContent: SiteContent = {
   timeline: timeline.map((item, index) => ({
     id: `timeline-${index + 1}`,
     occurredOn: item.date,
+    sortedOn: '',
     title: item.title,
     description: item.body,
   })),

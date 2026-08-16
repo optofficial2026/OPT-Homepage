@@ -66,6 +66,7 @@ export function TimelineEditor({ value, close }: { value?: TimelineItem; close: 
       await saveTimelineItem({
         id: value?.id ?? `timeline-new-${Date.now()}`,
         occurredOn: String(form.get('occurredOn')),
+        sortedOn: String(form.get('sortedOn')),
         title: String(form.get('title')),
         description: String(form.get('description')),
       });
@@ -80,7 +81,14 @@ export function TimelineEditor({ value, close }: { value?: TimelineItem; close: 
   };
   return <dialog className="admin-dialog editor-dialog" open><form onSubmit={submit} onChange={() => setIsDirty(true)}>
     <button className="dialog-close" type="button" onClick={requestClose}>×</button><p className="mono cyan">INLINE EDIT</p><h2>연혁 {value ? '수정' : '추가'}</h2>
-    <label>표시 날짜<input name="occurredOn" defaultValue={value?.occurredOn} placeholder="2026.09 또는 2026-09-01" required /></label>
+    <label>정렬 기준 날짜
+      <small>화면에는 보이지 않고 순서를 정하는 데만 씁니다. 기간이면 시작하는 달의 아무 날짜나 고르세요.</small>
+      <input name="sortedOn" type="date" defaultValue={value?.sortedOn} required />
+    </label>
+    <label>표시 문구
+      <small>연혁에 그대로 보입니다. ‘2026년 상반기’처럼 자유롭게 쓰세요.</small>
+      <input name="occurredOn" defaultValue={value?.occurredOn} placeholder="2026년 상반기" required />
+    </label>
     <label>제목<input name="title" defaultValue={value?.title} required /></label>
     <label>설명<textarea name="description" defaultValue={value?.description} required /></label>
     <footer className="editor-actions">

@@ -49,7 +49,7 @@ export default function LogPage() {
           <div className="log-copy"><p>{displayDate(item.occurredOn)}</p><h2>{item.title}</h2><div>{item.summary}</div></div>
         </a>
         {isEditMode && <div className="inline-actions"><button onClick={() => setEditing(item)}>수정</button><button onClick={async () => {
-          if (confirm('삭제할까요?')) { await deleteActivityPost(item.id); await refetch(); }
+          if (confirm('삭제할까요? 이 기록에 올린 사진도 함께 지워집니다.')) { await deleteActivityPost(item); await refetch(); }
         }}>삭제</button></div>}
       </article>)}</div>
     </section>

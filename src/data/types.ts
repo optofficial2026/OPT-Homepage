@@ -14,7 +14,10 @@ export type SiteSettings = {
 
 export type TimelineItem = {
   id: string;
+  /** 화면에 그대로 보이는 문구. '2026년 상반기'처럼 자유롭게 쓴다. */
   occurredOn: string;
+  /** 정렬에만 쓰는 실제 날짜(YYYY-MM-DD). 비어 있으면 문구에서 추정한다. */
+  sortedOn: string;
   title: string;
   description: string;
 };

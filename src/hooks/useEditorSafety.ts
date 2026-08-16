@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 export type UploadPendingChange = (delta: 1 | -1) => void;
 
-export function useEditorSafety(close: () => void) {
+export function useEditorSafety(close: () => void, { draftKept = false } = {}) {
   const [isDirty, setIsDirty] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [pendingUploads, setPendingUploads] = useState(0);
@@ -16,7 +16,10 @@ export function useEditorSafety(close: () => void) {
 
   const requestClose = () => {
     if (isSaving || pendingUploads > 0) return;
-    if (!isDirty || window.confirm('작성 중인 내용이 사라집니다. 닫을까요?')) close();
+    const warning = draftKept
+      ? '작성 중인 내용은 임시 보관되어 다시 열 때 이어서 쓸 수 있습니다. 닫을까요?'
+      : '작성 중인 내용이 사라집니다. 닫을까요?';
+    if (!isDirty || window.confirm(warning)) close();
   };
 
   const onUploadPendingChange = useCallback<UploadPendingChange>((delta) => {

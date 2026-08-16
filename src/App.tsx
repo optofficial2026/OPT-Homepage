@@ -1,6 +1,7 @@
 import Navigation from './components/Navigation';
 import AdminLoginDialog from './components/AdminLoginDialog';
 import AdminToolbar from './components/AdminToolbar';
+import ContentStatusBanner from './components/ContentStatusBanner';
 import optDarkLogo from '../opt 로고 거북이 다크모드.png';
 import { SiteProvider, useSite } from './components/SiteContext';
 import ArchivePage from './pages/ArchivePage';
@@ -18,7 +19,7 @@ function Site({ page }: AppProps) {
   const PageContent = pageContent[current];
   const { content, isAdmin, setLoginOpen } = useSite();
   const { settings } = content;
-  return <div className="min-h-screen">{current === 'home' && settings.recruitmentEnabled && <div className="ticker"><div>NOW RECRUITING　★　{settings.recruitmentCohort}기 부원 모집 중　★　STUDY · SEMINAR · HACKATHON　★　JOIN OPT　★　NOW RECRUITING　★　{settings.recruitmentCohort}기 부원 모집 중　★</div></div>}<Navigation active={current} /><PageContent /><footer><div className="wrap"><div className="brand footer-brand"><span className="footer-logo"><img src={optDarkLogo} alt="OPT 로고" /></span><span>AI Academic Club</span></div><div className="footer-admin"><span className="mono">활동 기록은 계속 업데이트됩니다.</span>{!isAdmin && <button type="button" onClick={() => setLoginOpen(true)}>관리자 로그인</button>}</div></div></footer><AdminLoginDialog /><AdminToolbar /></div>;
+  return <div className="min-h-screen"><ContentStatusBanner />{current === 'home' && settings.recruitmentEnabled && <div className="ticker"><div>NOW RECRUITING　★　{settings.recruitmentCohort}기 부원 모집 중　★　STUDY · SEMINAR · HACKATHON　★　JOIN OPT　★　NOW RECRUITING　★　{settings.recruitmentCohort}기 부원 모집 중　★</div></div>}<Navigation active={current} /><PageContent /><footer><div className="wrap"><div className="brand footer-brand"><span className="footer-logo"><img src={optDarkLogo} alt="OPT 로고" /></span><span>AI Academic Club</span></div><div className="footer-admin"><span className="mono">활동 기록은 계속 업데이트됩니다.</span>{!isAdmin && <button type="button" onClick={() => setLoginOpen(true)}>관리자 로그인</button>}</div></div></footer><AdminLoginDialog /><AdminToolbar /></div>;
 }
 
 export default function App(props: AppProps) {
