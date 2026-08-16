@@ -1,0 +1,48 @@
+# 소개 페이지 디자인 명세
+
+## 목적
+
+제공된 `OPT About.dc.html`의 소개 콘텐츠와 시각 언어를 현재 React 홈페이지의 `/intro/` 라우트에 반영한다. 기존 공통 네비게이션, 푸터, 관리자 도구와 배포 경로는 유지하고 소개 화면의 본문만 교체한다.
+
+## 화면 구성
+
+1. 히어로
+   - `// ABOUT OPT` 레이블
+   - `느리지만 멈추지 않고, Global Optimum을 향해` 제목
+   - OPT의 공부 방식을 설명하는 소개 문장
+   - 제공된 `assets/about-hero.png` 대표 이미지
+   - 이미지 위에 `DESCENDING TOWARD GLOBAL OPTIMUM`, `OPT · 토끼와 거북이` 캡션
+   - 우측 상단 라임 글로우와 좌측 하단 시안 글로우
+2. `01 / FABLE`
+   - `토끼와 거북이` 제목
+   - 느리지만 멈추지 않고 나아가는 태도에 대한 본문
+3. `02 / HOW WE LEARN`
+   - `한 걸음씩 더 깊게` 제목
+   - 모델의 원리, 수학적 기반, 데이터, 구현 과정을 함께 공부한다는 본문
+   - 네 개의 깊이 태그
+4. `03 / WHY "OPT"`
+   - `Local이 아닌 Global로` 제목
+   - Local Optimum과 Global Optimum 설명
+   - 참고 HTML과 같은 손실 곡선 SVG 다이어그램
+   - Global Optimum을 향해 꾸준히 나아간다는 강조 문장
+
+지원 CTA인 `// JOIN THE DESCENT`, `같이 내려갈 사람을 찾습니다`, `6기 지원하기` 영역은 소개 페이지에서 제외한다. 단, 공통 상단 네비게이션의 지원 버튼과 기존 모집 팝업은 변경하지 않는다.
+
+## 구현 원칙
+
+- `src/pages/IntroPage.tsx`를 React 컴포넌트로 구현한다. 참고 HTML 전체를 iframe으로 삽입하지 않는다.
+- 기존 `--deep`, `--ink`, `--lime`, `--cyan`, `--subtle`, `--border` 토큰과 `wrap`, `mono`, `reveal` 패턴을 재사용한다.
+- 소개 페이지 전용 스타일은 `src/index.css`에 `.intro-page` 접두사로 추가해 다른 페이지 스타일과 충돌하지 않게 한다.
+- 대표 이미지는 저장소의 `public/about-hero.png`로 제공하고 Vite의 base path에서 동작하도록 `/about-hero.png`를 직접 하드코딩하지 않고 `import.meta.env.BASE_URL`을 사용한다.
+- 대표 이미지는 참고 화면처럼 넓은 프레임을 채우며 `object-fit: cover`로 표시한다.
+- 데스크톱에서는 레이블과 본문을 300px + 본문 영역의 2열로 배치하고, 900px 이하에서는 1열로 전환한다.
+- 히어로 이미지는 데스크톱 460px, 모바일 280px 높이를 기준으로 하되 작은 화면에서 넘치지 않게 한다.
+- 본문 요소는 기존 `reveal` 애니메이션을 사용하고, `prefers-reduced-motion: reduce`에서는 기존 전역 규칙에 따라 애니메이션을 끈다.
+- 새 라이브러리, 데이터베이스 변경, 관리자 편집 기능은 추가하지 않는다.
+
+## 검증 기준
+
+- 소개 페이지 테스트가 참조 콘텐츠의 주요 문구, 섹션, 태그, SVG, 대표 이미지, 지원 CTA 제거를 확인한다.
+- `npm test`, `npm run typecheck`, `npm run build`, `git diff --check`가 모두 통과한다.
+- 로컬 브라우저에서 `/intro/`를 열어 공통 네비·푸터가 보이고, 대표 이미지·3개 섹션·곡선 다이어그램이 렌더링되는지 확인한다.
+- 760px 이하 화면에서 2열 본문이 1열로 바뀌고 가로 스크롤이 생기지 않는지 확인한다.
