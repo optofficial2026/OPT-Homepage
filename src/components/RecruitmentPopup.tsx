@@ -1,24 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { SiteSettings } from '../data/types';
 
-const SESSION_KEY = 'opt-recruitment-popup-seen';
-
-const hasSeenPopup = () => {
-  try {
-    return window.sessionStorage.getItem(SESSION_KEY) === '1';
-  } catch {
-    return false;
-  }
-};
-
-const markPopupSeen = () => {
-  try {
-    window.sessionStorage.setItem(SESSION_KEY, '1');
-  } catch {
-    // Storage can be unavailable in privacy-restricted browsers.
-  }
-};
-
 export default function RecruitmentPopup({ settings, contentLoading }: { settings: SiteSettings; contentLoading: boolean }) {
   const [open, setOpen] = useState(false);
   const recruitmentAvailable = settings.recruitmentEnabled && settings.recruitmentPopupEnabled;
@@ -28,8 +10,6 @@ export default function RecruitmentPopup({ settings, contentLoading }: { setting
       setOpen(false);
       return;
     }
-    if (hasSeenPopup()) return;
-    markPopupSeen();
     setOpen(true);
   }, [contentLoading, recruitmentAvailable]);
 
@@ -51,9 +31,9 @@ export default function RecruitmentPopup({ settings, contentLoading }: { setting
     <div className="modal-box" onClick={(event) => event.stopPropagation()}>
       <button className="modal-x" type="button" aria-label="모집 팝업 닫기" onClick={() => setOpen(false)}>×</button>
       <p>JOIN OPT · {settings.recruitmentCohort}TH</p>
-      <h1 id="recruitment-popup-title">AI를 공부하고 친숙해지고 싶지만 막막한 당신!</h1>
+      <h1 id="recruitment-popup-title">AI를 공부하고 싶은데 막막한 당신!</h1>
       <div>OPT (Optimal Personal Teacher)는 당신이 목표를 향한 첫발을 내딛도록 함께할 준비가 되어 있습니다.</div>
-      <div className="modal-actions">
+      <div className="modal-actions recruitment-popup-cta">
         {settings.recruitmentFormUrl ? <a className="button dark" href={settings.recruitmentFormUrl} target="_blank" rel="noreferrer">지원하기</a> : <button className="button dark" type="button" disabled>지원하기</button>}
       </div>
     </div>
