@@ -3,6 +3,7 @@ import type { ArchiveItem, HackathonDetail, SeminarDetail } from '../data/types'
 import { saveArchiveItem } from '../lib/content-mutations';
 import { validateSlug } from '../data/content';
 import { useEditorSafety } from '../hooks/useEditorSafety';
+import { useFormDraft } from '../hooks/useFormDraft';
 import { useSite } from './SiteContext';
 import GalleryUploadField from './GalleryUploadField';
 import ImageUploadField from './ImageUploadField';
@@ -29,7 +30,8 @@ export default function ArchiveEditor({ value, kind, close }: { value?: ArchiveI
     pendingUploads,
     onUploadPendingChange,
     requestClose,
-  } = useEditorSafety(close);
+  } = useEditorSafety(close, { draftKept: true });
+  const { formRef, saveDraft, clearDraft } = useFormDraft(`opt-draft-archive-${kind}-${value?.id ?? 'new'}`);
   const seminar = value?.kind === 'seminar' ? value.detail as SeminarDetail : null;
   const hackathon = value?.kind === 'hackathon' ? value.detail as HackathonDetail : null;
 
@@ -84,6 +86,7 @@ export default function ArchiveEditor({ value, kind, close }: { value?: ArchiveI
       });
       await refetch();
       setIsDirty(false);
+      clearDraft();
       close();
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : '저장하지 못했습니다.');
@@ -92,7 +95,7 @@ export default function ArchiveEditor({ value, kind, close }: { value?: ArchiveI
     }
   };
 
-  return <dialog className="admin-dialog editor-dialog wide-dialog" open><form onSubmit={submit} onChange={() => setIsDirty(true)}>
+  return <dialog className="admin-dialog editor-dialog wide-dialog" open><form ref={formRef} onSubmit={submit} onChange={(event) => { setIsDirty(true); saveDraft(event.currentTarget); }}>
     <button className="dialog-close" type="button" onClick={requestClose}>×</button>
     <p className="mono cyan">ARCHIVE EDIT</p>
     <h2>{kind === 'hackathon' ? '해커톤' : '세미나'} {value ? '수정' : '추가'}</h2>

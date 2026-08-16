@@ -8,6 +8,7 @@ import {
   emptyHackathonDetail,
   emptySeminarDetail,
   sortTimelineNewestFirst,
+  timelineSortKey,
   validateSlug,
 } from '../src/data/content.ts';
 
@@ -64,4 +65,26 @@ test('default seminar archives preserve their material formats', () => {
 test('stored dates use the compact public display format', () => {
   assert.equal(displayDate('2026-07-27'), '2026.07');
   assert.equal(displayDate('2026.07'), '2026.07');
+});
+
+test('timeline order follows the sort date, not the wording shown on screen', () => {
+  const items = [
+    { id: 'a', sortedOn: '2026-06-01', occurredOn: '아무렇게나 쓴 문구', title: '', description: '' },
+    { id: 'b', sortedOn: '2026-12-01', occurredOn: '2026 겨울', title: '', description: '' },
+    { id: 'c', sortedOn: '2026-09-01', occurredOn: '가을쯤', title: '', description: '' },
+  ];
+
+  assert.deepEqual(sortTimelineNewestFirst(items).map(({ id }) => id), ['b', 'c', 'a']);
+});
+
+test('rows saved before the sort date existed keep their old guessed order', () => {
+  const legacy = [
+    { id: 'start', sortedOn: '', occurredOn: '2026.03.07', title: '', description: '' },
+    { id: 'first-half', sortedOn: '', occurredOn: '2026년 상반기', title: '', description: '' },
+    { id: 'second-half', sortedOn: '', occurredOn: '2026년 하반기', title: '', description: '' },
+  ];
+
+  assert.deepEqual(sortTimelineNewestFirst(legacy).map(({ id }) => id), ['second-half', 'first-half', 'start']);
+  // A saved date wins over the wording even when the two disagree.
+  assert.equal(timelineSortKey({ sortedOn: '2026-01-01', occurredOn: '2026년 하반기' }), '20260101');
 });

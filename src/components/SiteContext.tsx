@@ -9,6 +9,7 @@ type SiteContextValue = {
   contentLoading: boolean;
   refetch: () => Promise<void>;
   contentError: string;
+  contentSource: 'supabase' | 'cache' | 'defaults';
   isAdmin: boolean;
   isEditMode: boolean;
   setEditMode: (value: boolean) => void;
@@ -22,7 +23,7 @@ type SiteContextValue = {
 const Context = createContext<SiteContextValue | null>(null);
 
 export function SiteProvider({ children }: { children: ReactNode }) {
-  const { data: content, loading: contentLoading, error: contentError, refetch } = useSiteContent();
+  const { data: content, loading: contentLoading, error: contentError, source: contentSource, refetch } = useSiteContent();
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isEditMode, setEditMode] = useState(false);
@@ -73,9 +74,9 @@ export function SiteProvider({ children }: { children: ReactNode }) {
   };
 
   const value = useMemo(() => ({
-    content, contentLoading, refetch, contentError, isAdmin, isEditMode, setEditMode,
+    content, contentLoading, refetch, contentError, contentSource, isAdmin, isEditMode, setEditMode,
     loginOpen, setLoginOpen, authError, signIn, signOut,
-  }), [content, contentLoading, contentError, isAdmin, isEditMode, loginOpen, authError, refetch]);
+  }), [content, contentLoading, contentError, contentSource, isAdmin, isEditMode, loginOpen, authError, refetch]);
 
   return <Context.Provider value={value}>{children}</Context.Provider>;
 }

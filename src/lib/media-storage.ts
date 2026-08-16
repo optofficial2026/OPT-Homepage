@@ -42,6 +42,25 @@ export const mediaPathFromUrl = (url: string) => {
   }
 };
 
+// Every file a record owns, so deleting the record can take its uploads with it.
+// External links resolve to an empty storage path and are skipped by removeMedia.
+export const mediaUrlsOf = (record: Record<string, unknown>): string[] => {
+  const detail = record.detail;
+  const fields = [record, ...(detail && typeof detail === 'object' ? [detail as Record<string, unknown>] : [])];
+  const urls = fields.flatMap((field) => [
+    field.thumbnailUrl,
+    field.heroImageUrl,
+    field.resourceUrl,
+    ...(Array.isArray(field.galleryUrls) ? field.galleryUrls : []),
+    ...(Array.isArray(field.resources) ? field.resources.map((item) => (item as { url?: unknown })?.url) : []),
+  ]);
+  return [...new Set(urls.filter((url): url is string => typeof url === 'string' && url !== ''))];
+};
+
+export async function removeAllMedia(record: Record<string, unknown>) {
+  await Promise.all(mediaUrlsOf(record).map(removeMedia));
+}
+
 export async function uploadMedia(folder: string, file: File) {
   const validation = mediaError(file);
   if (validation) throw new Error(validation);

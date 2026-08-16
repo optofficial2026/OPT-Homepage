@@ -3,6 +3,7 @@ import type { ActivityPost } from '../data/types';
 import { saveActivityPost } from '../lib/content-mutations';
 import { validateSlug } from '../data/content';
 import { useEditorSafety } from '../hooks/useEditorSafety';
+import { useFormDraft } from '../hooks/useFormDraft';
 import { useSite } from './SiteContext';
 import GalleryUploadField from './GalleryUploadField';
 import ImageUploadField from './ImageUploadField';
@@ -21,7 +22,8 @@ export default function ActivityEditor({ value, close }: { value?: ActivityPost;
     pendingUploads,
     onUploadPendingChange,
     requestClose,
-  } = useEditorSafety(close);
+  } = useEditorSafety(close, { draftKept: true });
+  const { formRef, saveDraft, clearDraft } = useFormDraft(`opt-draft-activity-${value?.id ?? 'new'}`);
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -50,6 +52,7 @@ export default function ActivityEditor({ value, close }: { value?: ActivityPost;
       });
       await refetch();
       setIsDirty(false);
+      clearDraft();
       close();
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : '저장하지 못했습니다.');
@@ -58,7 +61,7 @@ export default function ActivityEditor({ value, close }: { value?: ActivityPost;
     }
   };
 
-  return <dialog className="admin-dialog editor-dialog wide-dialog" open><form onSubmit={submit} onChange={() => setIsDirty(true)}>
+  return <dialog className="admin-dialog editor-dialog wide-dialog" open><form ref={formRef} onSubmit={submit} onChange={(event) => { setIsDirty(true); saveDraft(event.currentTarget); }}>
     <button className="dialog-close" type="button" onClick={requestClose}>×</button>
     <p className="mono cyan">ACTIVITY EDIT</p>
     <h2>활동 기록 {value ? '수정' : '추가'}</h2>

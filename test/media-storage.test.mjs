@@ -7,6 +7,7 @@ import {
   galleryLimitError,
   mediaError,
   mediaPathFromUrl,
+  mediaUrlsOf,
   safeMediaPath,
   thumbnailCropRect,
 } from '../src/lib/media-storage.ts';
@@ -48,4 +49,38 @@ test('public media URLs resolve to their storage object paths', () => {
     'activity/fixed-id.png',
   );
   assert.equal(mediaPathFromUrl('https://example.com/image.png'), '');
+});
+
+test('a deleted record hands over every file it owns, and nothing it merely links to', () => {
+  const activity = {
+    thumbnailUrl: 'https://x.supabase.co/storage/v1/object/public/content-media/activity/a.jpg',
+    heroImageUrl: 'https://x.supabase.co/storage/v1/object/public/content-media/activity/b.jpg',
+    galleryUrls: ['https://x.supabase.co/storage/v1/object/public/content-media/activity/c.jpg'],
+  };
+  assert.deepEqual(mediaUrlsOf(activity), [
+    activity.thumbnailUrl, activity.heroImageUrl, ...activity.galleryUrls,
+  ]);
+
+  const seminar = {
+    thumbnailUrl: 'https://x.supabase.co/storage/v1/object/public/content-media/archive/t.jpg',
+    detail: {
+      heroImageUrl: 'https://x.supabase.co/storage/v1/object/public/content-media/archive/h.jpg',
+      galleryUrls: ['https://x.supabase.co/storage/v1/object/public/content-media/archive/g.jpg'],
+      resourceUrl: '',
+      resources: [
+        { url: 'https://x.supabase.co/storage/v1/object/public/content-media/resources/s.pdf' },
+        { url: 'https://notion.so/some-page' },
+      ],
+    },
+  };
+  const urls = mediaUrlsOf(seminar);
+  assert.equal(urls.length, 5);
+  assert.ok(urls.includes(seminar.detail.resources[0].url));
+
+  // External links survive the round trip but resolve to no storage path, so removal skips them.
+  assert.ok(urls.includes('https://notion.so/some-page'));
+  assert.equal(mediaPathFromUrl('https://notion.so/some-page'), '');
+
+  // An empty record must not hand over blank strings to the delete call.
+  assert.deepEqual(mediaUrlsOf({ thumbnailUrl: '', galleryUrls: [] }), []);
 });
