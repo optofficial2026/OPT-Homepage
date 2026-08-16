@@ -84,6 +84,14 @@ test('intro page follows the supplied about design without an intro recruitment 
   assert.doesNotMatch(intro, /6기 지원하기/);
 });
 
+test('intro and activity layouts keep wide content inside the mobile viewport', async () => {
+  const styles = await read('src/index.css');
+
+  assert.match(styles, /\.intro-two>\*\{min-width:0\}/);
+  assert.match(styles, /\.intro-curve-card\{[^}]*max-width:100%/);
+  assert.match(styles, /\.log-card\{min-width:0\}/);
+});
+
 test('home removes KPI cards, centers the hero logo, and gently emphasizes recruitment', async () => {
   const [home, navigation, styles, content, editor] = await Promise.all([
     read('src/pages/HomePage.tsx'),
