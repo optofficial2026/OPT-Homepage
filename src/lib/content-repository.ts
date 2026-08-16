@@ -8,6 +8,7 @@ export type ContentResult = { data: SiteContent; source: Source; error: string }
 
 const settingsFromRow = (row: Record<string, unknown>): SiteSettings => ({
   recruitmentEnabled: Boolean(row.recruitment_enabled),
+  recruitmentPopupEnabled: row.recruitment_popup_enabled !== false,
   recruitmentCohort: Number(row.recruitment_cohort),
   recruitmentFormUrl: String(row.recruitment_form_url ?? ''),
   recruitmentClosedMessage: String(row.recruitment_closed_message ?? ''),

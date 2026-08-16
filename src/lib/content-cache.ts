@@ -1,3 +1,4 @@
+import { defaultContent } from '../data/content.ts';
 import type { SiteContent } from '../data/types';
 
 const KEY = 'opt-site-content-v1';
@@ -7,7 +8,7 @@ export function readContentCache(storage: StorageLike): SiteContent | null {
   try {
     const value = JSON.parse(storage.getItem(KEY) ?? 'null') as { version?: number; data?: Partial<SiteContent> } | null;
     const data = value?.data;
-    return value?.version === 1
+    const isValid = value?.version === 1
       && data
       && typeof data.settings === 'object'
       && data.settings !== null
@@ -15,8 +16,11 @@ export function readContentCache(storage: StorageLike): SiteContent | null {
       && Array.isArray(data.timeline)
       && Array.isArray(data.activities)
       && Array.isArray(data.archives)
-      ? data as SiteContent
-      : null;
+    if (!isValid) return null;
+    return {
+      ...(data as SiteContent),
+      settings: { ...defaultContent.settings, ...data.settings },
+    };
   } catch {
     return null;
   }

@@ -33,6 +33,18 @@ test('cache ignores malformed or old data', () => {
   assert.equal(readContentCache(invalidShape), null);
 });
 
+test('legacy cache fills newly added recruitment popup setting from defaults', () => {
+  const legacySettings = { ...defaultContent.settings };
+  delete legacySettings.recruitmentPopupEnabled;
+  const storage = memoryStorage();
+  storage.setItem('opt-site-content-v1', JSON.stringify({
+    version: 1,
+    data: { ...defaultContent, settings: legacySettings },
+  }));
+
+  assert.equal(readContentCache(storage)?.settings.recruitmentPopupEnabled, true);
+});
+
 test('storage errors never escape', () => {
   const broken = {
     getItem() { throw new Error('blocked'); },

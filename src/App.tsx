@@ -5,12 +5,13 @@ import optDarkLogo from '../opt로고 다크모드.png';
 import { SiteProvider, useSite } from './components/SiteContext';
 import ArchivePage from './pages/ArchivePage';
 import HomePage from './pages/HomePage';
+import IntroPage from './pages/IntroPage';
 import LogPage from './pages/LogPage';
 
-type Page = 'home' | 'log' | 'archive';
+type Page = 'home' | 'intro' | 'log' | 'archive';
 type AppProps = { page: string };
 
-const pageContent = { home: HomePage, log: LogPage, archive: ArchivePage } satisfies Record<Page, typeof HomePage>;
+const pageContent = { home: HomePage, intro: IntroPage, log: LogPage, archive: ArchivePage } satisfies Record<Page, typeof HomePage>;
 
 function Site({ page }: AppProps) {
   const current = (page in pageContent ? page : 'home') as Page;

@@ -25,6 +25,7 @@
 ## 파일 경계
 
 - `src/data/types.ts`, `src/data/content.ts`: 설정 타입과 기본값
+- `src/lib/content-cache.ts`: 기존 방문자 캐시의 누락된 설정 기본값 보정
 - `src/lib/content-repository.ts`, `src/lib/content-mutations.ts`: DB 읽기·쓰기 매핑
 - `src/components/HomeEditors.tsx`: 관리자 팝업 노출 토글
 - `src/components/RecruitmentPopup.tsx`: 세션당 1회 팝업 상태와 표시 UI
@@ -40,6 +41,7 @@
 ## 오류 및 호환성
 
 - Supabase 응답에 새 컬럼이 없거나 값이 null이면 기본값 `true`를 사용해 기존 배포가 깨지지 않도록 한다.
+- 기존 브라우저 캐시에 새 설정이 없어도 기본값으로 보정해 팝업이 조용히 꺼지지 않도록 한다.
 - 세션 저장소를 사용할 수 없는 환경에서는 팝업을 표시하되, 닫은 뒤 상태 저장 실패가 렌더링을 막지 않도록 한다.
 - 관리자 저장은 기존 `updateSiteSettings`의 행 영향 검증을 그대로 사용한다.
 - 소개 페이지는 데이터 조회를 새로 만들지 않고 기존 `SiteProvider`와 공통 레이아웃만 사용한다.

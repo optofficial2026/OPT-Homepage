@@ -17,6 +17,7 @@ export function SettingsEditor({ value, close }: { value: SiteSettings; close: (
     try {
       await updateSiteSettings({
         recruitmentEnabled: form.get('recruitmentEnabled') === 'on',
+        recruitmentPopupEnabled: form.get('recruitmentPopupEnabled') === 'on',
         recruitmentCohort: Number(form.get('recruitmentCohort')),
         recruitmentFormUrl: String(form.get('recruitmentFormUrl')),
         recruitmentClosedMessage: String(form.get('recruitmentClosedMessage')),
@@ -36,6 +37,7 @@ export function SettingsEditor({ value, close }: { value: SiteSettings; close: (
   return <dialog className="admin-dialog editor-dialog" open><form onSubmit={submit} onChange={() => setIsDirty(true)}>
     <button className="dialog-close" type="button" onClick={requestClose}>×</button><p className="mono cyan">INLINE EDIT</p><h2>홈 정보 수정</h2>
     <label className="check-label"><input name="recruitmentEnabled" type="checkbox" defaultChecked={value.recruitmentEnabled} /> 모집 모드 사용</label>
+    <label className="check-label"><input name="recruitmentPopupEnabled" type="checkbox" defaultChecked={value.recruitmentPopupEnabled} /> 모집 팝업 표시</label>
     <label>모집 기수<input name="recruitmentCohort" type="number" min="0" defaultValue={value.recruitmentCohort} required /></label>
     <label>지원 폼 링크<input name="recruitmentFormUrl" type="url" defaultValue={value.recruitmentFormUrl} /></label>
     <label>모집 종료 문구<textarea name="recruitmentClosedMessage" defaultValue={value.recruitmentClosedMessage} required /></label>

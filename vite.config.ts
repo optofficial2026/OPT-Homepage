@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   build: {
     rollupOptions: {
-      input: { home: 'index.html', log: 'log/index.html', archive: 'archive/index.html' },
+      input: { home: 'index.html', intro: 'intro/index.html', log: 'log/index.html', archive: 'archive/index.html' },
     },
   },
 });
