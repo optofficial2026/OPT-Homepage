@@ -84,12 +84,18 @@ test('intro page follows the supplied about design without an intro recruitment 
 });
 
 test('home removes KPI cards, centers the hero logo, and gently emphasizes recruitment', async () => {
-  const [home, navigation, styles] = await Promise.all([
+  const [home, navigation, styles, content, editor] = await Promise.all([
     read('src/pages/HomePage.tsx'),
     read('src/components/Navigation.tsx'),
     read('src/index.css'),
+    read('src/data/content.ts'),
+    read('src/components/HomeEditors.tsx'),
   ]);
 
+  for (const field of ['activityCohorts', 'activityMembers', 'activityPrograms']) {
+    assert.match(content, new RegExp(`${field}:`));
+    assert.match(editor, new RegExp(`name="${field}"`));
+  }
   assert.doesNotMatch(home, /className="stats"/);
   assert.doesNotMatch(home, /data-count=/);
   assert.doesNotMatch(home, /const counter = new IntersectionObserver/);
