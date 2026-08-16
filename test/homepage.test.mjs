@@ -48,7 +48,7 @@ test('recruitment popup visibility is part of the editable site settings contrac
   assert.match(migration, /add column if not exists recruitment_popup_enabled boolean not null default true/);
 });
 
-test('home and intro routes keep the shared shell while introducing a blank introduction page', async () => {
+test('home and intro routes keep the shared shell with a populated introduction page', async () => {
   const [vite, app, navigation, intro] = await Promise.all([
     read('vite.config.ts'),
     read('src/App.tsx'),
@@ -61,11 +61,56 @@ test('home and intro routes keep the shared shell while introducing a blank intr
   assert.match(app, /intro: IntroPage/);
   assert.match(navigation, /href=\{sitePath\('\/'\)\}>홈<\/a>/);
   assert.match(navigation, /href=\{sitePath\('\/intro\/'\)\}>소개<\/a>/);
-  assert.match(intro, /<main className="intro-page" aria-label="소개" \/>/);
+  assert.match(intro, /<main className="intro-page" aria-label="소개">/);
+  assert.match(intro, /<section className="intro-hero">/);
 });
 
-test('recruitment popup is session-scoped and the old home banner is removed', async () => {
-  const [popup, home, context] = await Promise.all([
+test('intro page follows the supplied about design without an intro recruitment CTA', async () => {
+  const intro = await read('src/pages/IntroPage.tsx');
+
+  for (const label of ['// ABOUT OPT', '01 / FABLE', '02 / HOW WE LEARN', '03 / WHY "OPT"']) {
+    assert.match(intro, new RegExp(label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  }
+  for (const copy of ['느리지만 멈추지 않고,', 'Global Optimum', '토끼와 거북이', '한 걸음씩', '더 깊게', 'Local이 아닌', 'Global로', '모델의 원리', '수학적 기반', '데이터', '구현 과정']) {
+    assert.match(intro, new RegExp(copy));
+  }
+  assert.match(intro, /about-hero\.png/);
+  assert.match(intro, /import\.meta\.env\.BASE_URL/);
+  assert.match(intro, /<svg/);
+  assert.match(intro, /LOCAL OPTIMUM/);
+  assert.match(intro, /GLOBAL OPTIMUM/);
+  assert.doesNotMatch(intro, /JOIN THE DESCENT/);
+  assert.doesNotMatch(intro, /같이 내려갈 사람을 찾습니다/);
+  assert.doesNotMatch(intro, /6기 지원하기/);
+});
+
+test('home removes KPI cards, centers the hero logo, and gently emphasizes recruitment', async () => {
+  const [home, navigation, styles, content, editor] = await Promise.all([
+    read('src/pages/HomePage.tsx'),
+    read('src/components/Navigation.tsx'),
+    read('src/index.css'),
+    read('src/data/content.ts'),
+    read('src/components/HomeEditors.tsx'),
+  ]);
+
+  for (const field of ['activityCohorts', 'activityMembers', 'activityPrograms']) {
+    assert.match(content, new RegExp(`${field}:`));
+    assert.match(editor, new RegExp(`name="${field}"`));
+  }
+  assert.doesNotMatch(home, /className="stats"/);
+  assert.doesNotMatch(home, /data-count=/);
+  assert.doesNotMatch(home, /const counter = new IntersectionObserver/);
+  assert.match(home, /className="hero-logo"/);
+  assert.match(navigation, /className="button primary recruitment-cta"/);
+  assert.match(styles, /\.recruitment-cta\{/);
+  assert.match(styles, /recruitment-cta-pulse/);
+  assert.match(styles, /prefers-reduced-motion:reduce/);
+  assert.match(styles, /\.hero-logo\{[^}]*top:50%[^}]*transform:translateY\(-50%\)/);
+});
+
+test('recruitment popup is session-scoped, home-only, and the old home banner is removed', async () => {
+  const [app, popup, home, context] = await Promise.all([
+    read('src/App.tsx'),
     read('src/components/RecruitmentPopup.tsx'),
     read('src/pages/HomePage.tsx'),
     read('src/components/SiteContext.tsx'),
@@ -80,6 +125,7 @@ test('recruitment popup is session-scoped and the old home banner is removed', a
   assert.match(popup, /event\.key === 'Escape'/);
   assert.match(popup, /stopPropagation/);
   assert.match(home, /<RecruitmentPopup/);
+  assert.doesNotMatch(app, /RecruitmentPopup/);
   assert.doesNotMatch(home, /id="recruit"/);
   assert.doesNotMatch(home, /recruit-banner/);
   assert.match((await read('src/components/Navigation.tsx')), /settings\.recruitmentFormUrl\s*\?/);
@@ -154,7 +200,7 @@ test('visual regressions do not block navigation or advertise unavailable action
 
   assert.doesNotMatch(home, /className="modal"/);
   assert.doesNotMatch(home, /recruit-banner/);
-  assert.match(navigation, /className="button primary"/);
+  assert.match(navigation, /className="button primary recruitment-cta"/);
   assert.match(styles, /\.nav-links \.button\{/);
   assert.match(styles, /\.nav-links a:not\(\.active\)\{display:inline-block/);
   assert.match(styles, /:focus-visible/);
@@ -196,9 +242,6 @@ test('home reflects OPT second-generation recruiting and study-first messaging',
   assert.match(home, /opt로고 화이트모드\.png/);
   assert.match(home, /className="hero-logo/);
   assert.match(home, /settings\.recruitmentCohort.*기 부원 모집 중/);
-  assert.match(home, /settings\.activityCohorts/);
-  assert.match(home, /settings\.activityPrograms/);
-  assert.match(home, /settings\.activityMembers/);
   assert.match(home, /피드백으로 성장/);
   assert.doesNotMatch(home, /결과물로 확장/);
   assert.match(home, /주제는 당일 공개/);
@@ -222,9 +265,6 @@ test('home reflects the confirmed OPT identity and second-cohort recruiting copy
 
   assert.match(home, /opt로고 화이트모드\.png/);
   assert.match(home, /className="hero-logo/);
-  assert.match(home, /settings\.activityCohorts/);
-  assert.match(home, /settings\.activityPrograms/);
-  assert.match(home, /settings\.activityMembers/);
   assert.match(home, /기술과 논문/);
   assert.match(home, /주도적으로 AI 이론/);
   assert.match(home, /피드백/);
@@ -249,8 +289,7 @@ test('home reflects the confirmed OPT identity and second-cohort recruiting copy
   assert.match(styles, /\.hero-logo/);
   assert.match(styles, /\.brand-mark\{/);
   assert.match(styles, /\.hero h1\{line-height:1\.02/);
-  assert.match(styles, /@media\(min-width:761px\)\{\.hero-content\{padding-left:min\(40vw,500px\)/);
-  assert.match(styles, /\.stats\{position:absolute;top:370px;left:0;width:340px;height:368px;grid-template-columns:1fr/);
+  assert.match(styles, /@media\(min-width:761px\)\{\.hero-content\{min-height:calc\(100svh - 112px\);padding-left:min\(40vw,500px\)/);
 });
 
 test('uses dark logo variants in navigation and footer and white logo in hero', async () => {
@@ -318,8 +357,12 @@ test('github pages build uses a configurable base and public supabase values onl
 
 test('home observers are recreated when dynamic content changes', async () => {
   const home = await read('src/pages/HomePage.tsx');
-  assert.match(home, /reveal\.disconnect\(\); \};\n  }, \[content\.timeline\]\);\n  useEffect\(\(\) => \{\n    const counter/);
-  assert.match(home, /counter\.disconnect\(\); \};\n  }, \[settings\.activityCohorts, settings\.activityPrograms, settings\.activityMembers\]\)/);
+  assert.match(home, /const timelineRef = useRef<HTMLDivElement>\(null\);/);
+  assert.match(home, /const sortedTimeline = sortTimelineNewestFirst\(content\.timeline\);/);
+  assert.match(home, /document\.querySelectorAll\('\.reveal'\)\.forEach\(\(element\) => reveal\.observe\(element\)\);/);
+  assert.match(home, /return \(\) => \{ reveal\.disconnect\(\); \};\n  \}, \[content\.timeline\]\);/);
+  assert.match(home, /timelineRef\.current\.scrollTop = 0; \}, \[content\.timeline\]\);/);
+  assert.doesNotMatch(home, /const counter = new IntersectionObserver/);
 });
 
 test('seminar material format can be edited and is shown in the archive list', async () => {

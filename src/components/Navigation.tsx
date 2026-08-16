@@ -17,8 +17,8 @@ export default function Navigation({ active }: NavigationProps) {
           <a className={active === 'log' ? 'active' : ''} href={sitePath('/log/')}>활동기록</a>
           <a className={active === 'archive' ? 'active' : ''} href={sitePath('/archive/')}>아카이브</a>
           {settings.recruitmentEnabled && (settings.recruitmentFormUrl
-            ? <a className="button primary" href={settings.recruitmentFormUrl} target="_blank" rel="noreferrer">{settings.recruitmentCohort}기 지원</a>
-            : <button className="button primary" type="button" disabled>{settings.recruitmentCohort}기 지원</button>)}
+            ? <a className="button primary recruitment-cta" href={settings.recruitmentFormUrl} target="_blank" rel="noreferrer">{settings.recruitmentCohort}기 지원</a>
+            : <button className="button primary recruitment-cta" type="button" disabled>{settings.recruitmentCohort}기 지원</button>)}
         </div>
       </nav>
     </header>

@@ -32,22 +32,10 @@ export default function HomePage() {
     document.querySelectorAll('.reveal').forEach((element) => reveal.observe(element));
     return () => { reveal.disconnect(); };
   }, [content.timeline]);
-  useEffect(() => {
-    const counter = new IntersectionObserver((entries, observer) => entries.forEach((entry) => {
-      if (!entry.isIntersecting) return;
-      observer.unobserve(entry.target);
-      const element = entry.target as HTMLElement;
-      const target = Number(element.dataset.count ?? 0); const start = performance.now();
-      const tick = (now: number) => { const progress = Math.min(1, (now - start) / 900); element.textContent = String(Math.round(target * (1 - (1 - progress) ** 3))); if (progress < 1) requestAnimationFrame(tick); };
-      requestAnimationFrame(tick);
-    }), { threshold: 0.5 });
-    document.querySelectorAll<HTMLElement>('[data-count]').forEach((element) => counter.observe(element));
-    return () => { counter.disconnect(); };
-  }, [settings.activityCohorts, settings.activityPrograms, settings.activityMembers]);
   useEffect(() => { if (timelineRef.current) timelineRef.current.scrollTop = 0; }, [content.timeline]);
 
   return <>
-    <section className="hero" id="top"><div className="hero-grid" /><div className="hero-blob lime" /><div className="hero-blob cyan" /><div className="wrap hero-content">{settings.recruitmentEnabled && <div className="recruit-badge"><i />{settings.recruitmentCohort}기 부원 모집 중</div>}<div className="hero-logo"><img src={optLogo} alt="OPT 로고" /></div><p className="mono cyan">// AI ACADEMIC CLUB</p><h1><span className="reveal">AI를 배우고,</span><span className="reveal">토론하고,</span><em className="reveal">깨우친다.</em></h1><p className="hero-body reveal">스터디에서 <b>기술과 논문</b>의 기반을 다지고, 세미나에서는 직접 탐구한 주제를 발표하며 부원들과 질문과 토의를 나눕니다. 수동적으로 듣는 대신, <b>주도적으로 AI 이론</b>을 이해하고 설명하는 힘을 기릅니다.</p><div className="hero-actions reveal"><a className="button primary" href="#about">동아리 살펴보기 →</a><a className="button outline" href="#activities">핵심 활동 보기</a>{isEditMode && <button className="admin-action" type="button" onClick={() => setSettingsOpen(true)}>홈 정보 수정</button>}</div><div className="stats reveal">{[[settings.activityCohorts, '함께한 활동 기수'], [settings.activityPrograms, '누적 활동 프로그램'], [settings.activityMembers, '함께한 멤버']].map(([count, label]) => <div key={String(label)}><strong data-count={count}>0</strong><em>+</em><span>{label}</span></div>)}</div></div></section>
+    <section className="hero" id="top"><div className="hero-grid" /><div className="hero-blob lime" /><div className="hero-blob cyan" /><div className="wrap hero-content">{settings.recruitmentEnabled && <div className="recruit-badge"><i />{settings.recruitmentCohort}기 부원 모집 중</div>}<div className="hero-logo"><img src={optLogo} alt="OPT 로고" /></div><p className="mono cyan">// AI ACADEMIC CLUB</p><h1><span className="reveal">AI를 배우고,</span><span className="reveal">토론하고,</span><em className="reveal">깨우친다.</em></h1><p className="hero-body reveal">스터디에서 <b>기술과 논문</b>의 기반을 다지고, 세미나에서는 직접 탐구한 주제를 발표하며 부원들과 질문과 토의를 나눕니다. 수동적으로 듣는 대신, <b>주도적으로 AI 이론</b>을 이해하고 설명하는 힘을 기릅니다.</p><div className="hero-actions reveal"><a className="button primary" href="#about">동아리 살펴보기 →</a><a className="button outline" href="#activities">핵심 활동 보기</a>{isEditMode && <button className="admin-action" type="button" onClick={() => setSettingsOpen(true)}>홈 정보 수정</button>}</div></div></section>
     <div className="marquee"><div>STUDY <b>·</b> SEMINAR <b>·</b> HACKATHON <b>·</b> PAPER READING <b>·</b> DISCUSSION <b>·</b> ARCHIVE <b>·</b> STUDY <b>·</b> SEMINAR <b>·</b> HACKATHON <b>·</b></div></div>
     <section className="wrap section about" id="about"><div className="about-copy reveal"><p className="mono cyan">01 / ABOUT</p><h2>스스로 탐구하고,<br />나누는 동아리</h2><div>OPT에서는 단순히 내용을 받아들이는 데 그치지 않습니다. 각자 맡은 주제를 직접 조사해 세미나에서 설명하고, 질문과 피드백을 주고받으며 서로의 이해를 넓힙니다. 배우고, 정리하고, 남에게 전달하는 과정을 반복합니다.</div></div><div className="value-list">{values.map(([number, title, body]) => <article className="reveal" key={number}><b>{number}</b><div><h3>{title}</h3><p>{body}</p></div></article>)}</div></section>
     <section className="wrap section" id="activities"><p className="mono cyan reveal">02 / WHAT WE DO</p><h2 className="reveal">핵심 활동</h2><div className="activity-cards">{activities.map(([icon, label, title, body]) => <article className="reveal" key={label}><div className="icon">{icon}</div><p className="mono cyan">{label}</p><h3>{title}</h3><div>{body}</div></article>)}</div></section>
