@@ -18,15 +18,71 @@ test('Vite React scaffold exposes the maintenance scripts and entry point', asyn
 });
 
 test('all routes mount the shared React entry with a page marker', async () => {
-  const [home, log, archive] = await Promise.all([
-    read('index.html'), read('log/index.html'), read('archive/index.html'),
+  const [home, intro, log, archive] = await Promise.all([
+    read('index.html'), read('intro/index.html'), read('log/index.html'), read('archive/index.html'),
   ]);
 
-  for (const [html, page] of [[home, 'home'], [log, 'log'], [archive, 'archive']]) {
+  for (const [html, page] of [[home, 'home'], [intro, 'intro'], [log, 'log'], [archive, 'archive']]) {
     assert.match(html, new RegExp(`<body[^>]*data-page="${page}"`));
     assert.match(html, /<div id="root"><\/div>/);
     assert.match(html, /src="\/src\/main\.tsx"/);
   }
+});
+
+test('recruitment popup visibility is part of the editable site settings contract', async () => {
+  const [content, repository, mutations, editor, migration] = await Promise.all([
+    read('src/data/content.ts'),
+    read('src/lib/content-repository.ts'),
+    read('src/lib/content-mutations.ts'),
+    read('src/components/HomeEditors.tsx'),
+    read('supabase/migrations/20260816000000_add_recruitment_popup_setting.sql'),
+  ]);
+
+  assert.equal(defaultContent.settings.recruitmentPopupEnabled, true);
+  assert.match(content, /recruitmentPopupEnabled: true/);
+  assert.match(repository, /recruitmentPopupEnabled: row\.recruitment_popup_enabled !== false/);
+  assert.match(mutations, /recruitment_popup_enabled: value\.recruitmentPopupEnabled/);
+  assert.match(editor, /recruitmentPopupEnabled: form\.get\('recruitmentPopupEnabled'\) === 'on'/);
+  assert.match(editor, /name="recruitmentPopupEnabled"/);
+  assert.match(editor, /모집 팝업 표시/);
+  assert.match(migration, /add column if not exists recruitment_popup_enabled boolean not null default true/);
+});
+
+test('home and intro routes keep the shared shell while introducing a blank introduction page', async () => {
+  const [vite, app, navigation, intro] = await Promise.all([
+    read('vite.config.ts'),
+    read('src/App.tsx'),
+    read('src/components/Navigation.tsx'),
+    read('src/pages/IntroPage.tsx'),
+  ]);
+
+  assert.match(vite, /intro: 'intro\/index\.html'/);
+  assert.match(app, /IntroPage/);
+  assert.match(app, /intro: IntroPage/);
+  assert.match(navigation, /href=\{sitePath\('\/'\)\}>홈<\/a>/);
+  assert.match(navigation, /href=\{sitePath\('\/intro\/'\)\}>소개<\/a>/);
+  assert.match(intro, /<main className="intro-page" aria-label="소개" \/>/);
+});
+
+test('recruitment popup is session-scoped and the old home banner is removed', async () => {
+  const [popup, home, context] = await Promise.all([
+    read('src/components/RecruitmentPopup.tsx'),
+    read('src/pages/HomePage.tsx'),
+    read('src/components/SiteContext.tsx'),
+  ]);
+
+  assert.match(popup, /contentLoading/);
+  assert.match(popup, /opt-recruitment-popup-seen/);
+  assert.match(popup, /sessionStorage\.getItem/);
+  assert.match(popup, /sessionStorage\.setItem/);
+  assert.match(popup, /role="dialog"/);
+  assert.match(popup, /aria-modal="true"/);
+  assert.match(popup, /event\.key === 'Escape'/);
+  assert.match(popup, /stopPropagation/);
+  assert.match(home, /<RecruitmentPopup/);
+  assert.doesNotMatch(home, /id="recruit"/);
+  assert.doesNotMatch(home, /recruit-banner/);
+  assert.match(context, /contentLoading/);
 });
 
 test('React pages own typed content, reveal behavior, and activity filtering', async () => {
@@ -95,11 +151,10 @@ test('visual regressions do not block navigation or advertise unavailable action
   ]);
 
   assert.doesNotMatch(home, /className="modal"/);
-  assert.match(home, /button className="button dark" type="button" disabled/);
+  assert.doesNotMatch(home, /recruit-banner/);
   assert.match(navigation, /className="button primary"/);
   assert.match(styles, /\.nav-links \.button\{/);
   assert.match(styles, /\.nav-links a:not\(\.active\)\{display:inline-block/);
-  assert.match(styles, /\.recruit-banner h2\{[^}]*word-break:keep-all/);
   assert.match(styles, /:focus-visible/);
   assert.match(app, /활동 기록은 계속 업데이트됩니다/);
   assert.doesNotMatch(app, /INSTAGRAM/);
@@ -127,10 +182,11 @@ test('detail typography and sections use a restrained editorial scale', async ()
 });
 
 test('home reflects OPT second-generation recruiting and study-first messaging', async () => {
-  const [app, content, home, navigation, styles] = await Promise.all([
+  const [app, content, home, popup, navigation, styles] = await Promise.all([
     read('src/App.tsx'),
     read('src/data/content.ts'),
     read('src/pages/HomePage.tsx'),
+    read('src/components/RecruitmentPopup.tsx'),
     read('src/components/Navigation.tsx'),
     read('src/index.css'),
   ]);
@@ -144,8 +200,8 @@ test('home reflects OPT second-generation recruiting and study-first messaging',
   assert.match(home, /피드백으로 성장/);
   assert.doesNotMatch(home, /결과물로 확장/);
   assert.match(home, /주제는 당일 공개/);
-  assert.match(home, /AI를 공부하고 친숙해지고 싶지만 막막한 당신/);
-  assert.match(home, /<button className="button dark" type="button" disabled>지원하기<\/button>/);
+  assert.match(popup, /AI를 공부하고 친숙해지고 싶지만 막막한 당신/);
+  assert.match(popup, /<button className="button dark" type="button" disabled>지원하기<\/button>/);
   assert.match(app, /settings\.recruitmentCohort.*기 부원 모집 중/);
   assert.match(content, /2026\.09/);
   assert.match(navigation, /settings\.recruitmentCohort.*기 지원/);
@@ -153,10 +209,11 @@ test('home reflects OPT second-generation recruiting and study-first messaging',
 });
 
 test('home reflects the confirmed OPT identity and second-cohort recruiting copy', async () => {
-  const [app, content, home, navigation, styles] = await Promise.all([
+  const [app, content, home, popup, navigation, styles] = await Promise.all([
     read('src/App.tsx'),
     read('src/data/content.ts'),
     read('src/pages/HomePage.tsx'),
+    read('src/components/RecruitmentPopup.tsx'),
     read('src/components/Navigation.tsx'),
     read('src/index.css'),
   ]);
@@ -173,7 +230,7 @@ test('home reflects the confirmed OPT identity and second-cohort recruiting copy
   assert.match(home, /\['📖', 'STUDY'/);
   assert.match(home, /\['🎙', 'SEMINAR'/);
   assert.match(home, /당일 공개/);
-  assert.match(home, /button className="button dark" type="button" disabled/);
+  assert.match(popup, /button className="button dark" type="button" disabled/);
   assert.match(app, /settings\.recruitmentCohort.*기 부원 모집 중/);
   assert.match(navigation, /settings\.recruitmentCohort.*기 지원/);
   assert.match(navigation, /className="brand-mark"/);

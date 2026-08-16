@@ -3,6 +3,7 @@ export type ArchiveKind = 'seminar' | 'hackathon';
 
 export type SiteSettings = {
   recruitmentEnabled: boolean;
+  recruitmentPopupEnabled: boolean;
   recruitmentCohort: number;
   recruitmentFormUrl: string;
   recruitmentClosedMessage: string;

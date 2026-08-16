@@ -6,6 +6,7 @@ import { supabase } from '../lib/supabase';
 
 type SiteContextValue = {
   content: SiteContent;
+  contentLoading: boolean;
   refetch: () => Promise<void>;
   contentError: string;
   isAdmin: boolean;
@@ -21,7 +22,7 @@ type SiteContextValue = {
 const Context = createContext<SiteContextValue | null>(null);
 
 export function SiteProvider({ children }: { children: ReactNode }) {
-  const { data: content, error: contentError, refetch } = useSiteContent();
+  const { data: content, loading: contentLoading, error: contentError, refetch } = useSiteContent();
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isEditMode, setEditMode] = useState(false);
@@ -72,9 +73,9 @@ export function SiteProvider({ children }: { children: ReactNode }) {
   };
 
   const value = useMemo(() => ({
-    content, refetch, contentError, isAdmin, isEditMode, setEditMode,
+    content, contentLoading, refetch, contentError, isAdmin, isEditMode, setEditMode,
     loginOpen, setLoginOpen, authError, signIn, signOut,
-  }), [content, contentError, isAdmin, isEditMode, loginOpen, authError, refetch]);
+  }), [content, contentLoading, contentError, isAdmin, isEditMode, loginOpen, authError, refetch]);
 
   return <Context.Provider value={value}>{children}</Context.Provider>;
 }

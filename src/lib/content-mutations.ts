@@ -14,6 +14,7 @@ const fail = ({ error, data }: { error: { message: string } | null; data: unknow
 export async function updateSiteSettings(value: SiteSettings) {
   const result = await client().from('site_settings').update({
     recruitment_enabled: value.recruitmentEnabled,
+    recruitment_popup_enabled: value.recruitmentPopupEnabled,
     recruitment_cohort: value.recruitmentCohort,
     recruitment_form_url: value.recruitmentFormUrl,
     recruitment_closed_message: value.recruitmentClosedMessage,

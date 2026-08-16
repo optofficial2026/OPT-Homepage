@@ -133,6 +133,7 @@ const defaultArchives: ArchiveItem[] = [
 export const defaultContent: SiteContent = {
   settings: {
     recruitmentEnabled: true,
+    recruitmentPopupEnabled: true,
     recruitmentCohort: 2,
     recruitmentFormUrl: '',
     recruitmentClosedMessage: '현재는 모집 중이 아닙니다. 다음 기수 지원 때 다시 찾아주세요.',
