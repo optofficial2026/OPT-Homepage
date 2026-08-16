@@ -82,6 +82,8 @@ test('recruitment popup is session-scoped and the old home banner is removed', a
   assert.match(home, /<RecruitmentPopup/);
   assert.doesNotMatch(home, /id="recruit"/);
   assert.doesNotMatch(home, /recruit-banner/);
+  assert.match((await read('src/components/Navigation.tsx')), /settings\.recruitmentFormUrl\s*\?/);
+  assert.match((await read('src/components/Navigation.tsx')), /type="button" disabled/);
   assert.match(context, /contentLoading/);
 });
 
