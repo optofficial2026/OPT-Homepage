@@ -14,7 +14,7 @@ const fileExtension = ({ type, name = '' }: { type: string; name?: string }) =>
   EXTENSIONS[type] ?? name.split('.').pop()?.toLowerCase() ?? '';
 
 export const resourceTitle = (fileName: string) =>
-  fileName.replace(/\.[^.]+$/, '').trim() || '세미나 자료';
+  fileName.replace(/\.[^.]+$/, '').trim() || '활동 자료';
 
 export const resourceFileError = (
   file: { type: string; size: number; name?: string },

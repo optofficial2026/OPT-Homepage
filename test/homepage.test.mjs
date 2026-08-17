@@ -289,8 +289,8 @@ test('home reflects the confirmed OPT identity and second-cohort recruiting copy
 
   assert.match(home, /opt 로고 거북이 화이트 모드\.png/);
   assert.match(home, /className="hero-logo/);
-  assert.match(home, /기술과 논문/);
-  assert.match(home, /주도적으로 AI 이론/);
+  assert.match(home, /시행착오를 거치며 우리의 문제를 최적화해 나갑니다/);
+  assert.match(home, /대학생, 현직자, 연구원이 함께 모여/);
   assert.match(home, /피드백/);
   assert.match(home, /발표자는 주제를 깊이 있게 숙지하고/);
   assert.match(home, /\['📖', 'STUDY'/);
@@ -415,6 +415,34 @@ test('seminar material format can be edited and is shown in the archive list', a
   assert.match(archive, /detail as SeminarDetail\)\.format \?\? 'SLIDE'/);
 });
 
+test('the archive resource section is named after activities, not seminars', async () => {
+  const [archive, editor, detail] = await Promise.all([
+    read('src/pages/ArchivePage.tsx'),
+    read('src/components/ArchiveEditor.tsx'),
+    read('src/pages/SeminarDetailPage.tsx'),
+  ]);
+
+  assert.match(archive, /<h2>활동 자료<\/h2>/);
+  assert.match(archive, />활동 자료 추가</);
+  assert.match(editor, /'해커톤' : '활동 자료'/);
+  assert.doesNotMatch(archive, /세미나 자료|세미나 추가/);
+  assert.doesNotMatch(detail, /세미나/);
+});
+
+test('activity resources upload files without asking for photos', async () => {
+  const editor = await read('src/components/ArchiveEditor.tsx');
+  const seminarBranch = editor.slice(editor.indexOf("{kind === 'seminar' ? <>"), editor.indexOf('</> : <>'));
+
+  // 활동 자료 폼에는 사진 관련 입력이 남아 있으면 안 된다.
+  for (const gone of ['heroImageUrl', 'galleryUrls', 'thumbnailUrl', 'name="body"']) {
+    assert.doesNotMatch(seminarBranch, new RegExp(gone));
+  }
+  assert.match(seminarBranch, /SeminarResourcesField/);
+  assert.match(seminarBranch, /name="format"/);
+  // 썸네일 입력이 사라진 뒤에도 저장이 빈 값으로 안전하게 넘어가야 한다.
+  assert.match(editor, /form\.get\('thumbnailUrl'\) \?\? ''/);
+});
+
 test('seminar details present descriptive resource cards instead of a generic link', async () => {
   const detail = await read('src/pages/SeminarDetailPage.tsx');
   assert.match(detail, /visibleSeminarResources/);
@@ -433,7 +461,11 @@ test('all detail pages keep section headings and pending copy for empty content'
   ]);
   assert.match(section, /준비 중입니다\./);
   for (const heading of ['활동 내용', '활동 사진']) assert.match(activity, new RegExp(heading));
-  for (const heading of ['세미나 내용', '세미나 사진', '관련 자료']) assert.match(seminar, new RegExp(heading));
+  // 활동 자료는 자료 목록만 남기고 본문·사진 구역을 걷어냈다.
+  assert.match(seminar, /관련 자료/);
+  for (const gone of ['세미나 내용', '세미나 사진', 'detail-cover', 'MediaGallery']) {
+    assert.doesNotMatch(seminar, new RegExp(gone));
+  }
   for (const heading of ['문제', '해결', '주요 기능', '프로젝트 화면', '개발 과정', '시스템 구조', '회고', '결과', '기술 스택', '팀']) {
     assert.match(hackathon, new RegExp(heading));
   }
@@ -570,4 +602,50 @@ test('new content receives an automatic slug while existing slugs stay editable'
     assert.match(editor, /type="hidden"/);
     assert.match(editor, /고급 설정/);
   }
+});
+
+test('the hero headline keeps three lines with OPT as the accented one', async () => {
+  const home = await read('src/pages/HomePage.tsx');
+  const headline = home.slice(home.indexOf('<h1>'), home.indexOf('</h1>'));
+
+  assert.match(headline, /<span className="reveal">Slow &amp; steady<\/span>/);
+  assert.match(headline, /<span className="reveal">Think deep<\/span>/);
+  // em 이 라임색 강조를 받는 줄이다.
+  assert.match(headline, /<em className="reveal">OPT<\/em>/);
+  assert.doesNotMatch(home, /AI를 배우고,/);
+});
+
+test('home values drop the lecture framing and the vague closing line', async () => {
+  const home = await read('src/pages/HomePage.tsx');
+
+  assert.match(home, /모두 함께 다양한 지식과 관점을 익힙니다/);
+  assert.match(home, /피드백을 주고받으며 성장합니다/);
+  assert.doesNotMatch(home, /수강자/);
+  assert.doesNotMatch(home, /생각을 더 정확하게 다듬습니다/);
+});
+
+test('core activity cards lead with the seminar and link into their own activity filter', async () => {
+  const [home, log] = await Promise.all([
+    read('src/pages/HomePage.tsx'),
+    read('src/pages/LogPage.tsx'),
+  ]);
+
+  // 세미나가 스터디보다 먼저 나온다.
+  assert.ok(home.indexOf("'🎙', 'SEMINAR'") < home.indexOf("'📖', 'STUDY'"));
+  assert.match(home, /\$\{sitePath\('\/log\/'\)\}\?tag=\$\{tag\}/);
+  // 해커톤은 걸 곳이 없어 링크를 붙이지 않는다.
+  assert.match(home, /'해커톤', '배운 이론을[^']*', ''\]/);
+
+  // 활동 기록이 그 필터를 실제로 받아야 링크가 의미를 갖는다.
+  assert.match(log, /useState<Filter>\(requestedFilter\)/);
+  assert.match(log, /get\('tag'\)/);
+  assert.match(log, /includes\(tag\) \? tag as Filter : 'ALL'/);
+});
+
+test('intro copy names the club plainly and drops the trailing period on the accent line', async () => {
+  const intro = await read('src/pages/IntroPage.tsx');
+
+  assert.match(intro, /AI 연합 학회 OPT가 공부를 대하는 방식</);
+  assert.match(intro, /<span>Global Optimum에 가까워질 수 있다고 믿습니다<\/span>/);
+  assert.doesNotMatch(intro, /기록하는 인공지능 학술 동아리/);
 });
