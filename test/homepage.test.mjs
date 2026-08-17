@@ -604,6 +604,13 @@ test('new content receives an automatic slug while existing slugs stay editable'
   }
 });
 
+test('the recruitment banner spells OPT out as Optimizer', async () => {
+  const popup = await read('src/components/RecruitmentPopup.tsx');
+
+  assert.match(popup, /OPT \(Optimizer\)는 당신이 목표를 향한 첫발을 내딛도록/);
+  assert.doesNotMatch(popup, /Optimal Personal Teacher/);
+});
+
 test('the hero headline keeps three lines with OPT as the accented one', async () => {
   const home = await read('src/pages/HomePage.tsx');
   const headline = home.slice(home.indexOf('<h1>'), home.indexOf('</h1>'));
