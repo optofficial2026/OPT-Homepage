@@ -1,6 +1,6 @@
 import type { ActivityPost, ArchiveItem, SiteSettings, TimelineItem } from '../data/types';
-import { removeAllMedia } from './media-storage';
-import { supabase } from './supabase';
+import { removeAllMedia } from './media-storage.ts';
+import { supabase } from './supabase.ts';
 
 const client = () => {
   if (!supabase) throw new Error('Supabase가 연결되지 않았습니다.');
@@ -26,17 +26,27 @@ export async function updateSiteSettings(value: SiteSettings) {
   fail(result);
 }
 
+/**
+ * 정렬용 날짜 칸을 아직 추가하지 않은 데이터베이스가 내는 오류.
+ * 운영자가 마이그레이션을 실행하기 전에도 연혁 저장은 막히지 않아야 한다.
+ */
+export const isMissingSortDate = (error: { message?: string } | null) =>
+  Boolean(error?.message?.includes('sorted_on'));
+
 export async function saveTimelineItem(value: TimelineItem) {
-  const row = {
+  const { sorted_on, ...base } = {
     occurred_on: value.occurredOn,
     sorted_on: value.sortedOn || null,
     title: value.title,
     description: value.description,
   };
-  const query = value.id.startsWith('timeline-')
+  const write = (row: Record<string, unknown>) => (value.id.startsWith('timeline-')
     ? client().from('timeline_items').insert(row)
-    : client().from('timeline_items').update(row).eq('id', value.id);
-  fail(await query.select('id'));
+    : client().from('timeline_items').update(row).eq('id', value.id)).select('id');
+
+  const result = await write({ ...base, sorted_on });
+  // 칸이 없는 경우에만 날짜를 빼고 다시 저장한다. 순서는 표시 문구에서 추정된다.
+  fail(isMissingSortDate(result.error) ? await write(base) : result);
 }
 
 export async function deleteTimelineItem(id: string) {
