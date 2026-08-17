@@ -604,6 +604,18 @@ test('new content receives an automatic slug while existing slugs stay editable'
   }
 });
 
+test('the home timeline section is labelled 활동 내용', async () => {
+  const [home, editor] = await Promise.all([
+    read('src/pages/HomePage.tsx'),
+    read('src/components/HomeEditors.tsx'),
+  ]);
+
+  assert.match(home, /<h2 className="reveal">활동 내용<\/h2>/);
+  assert.match(home, />활동 내용 추가</);
+  assert.match(editor, /<h2>활동 내용 \{value \? '수정' : '추가'\}<\/h2>/);
+  for (const file of [home, editor]) assert.doesNotMatch(file, /연혁/);
+});
+
 test('the recruitment banner spells OPT out as Optimizer', async () => {
   const popup = await read('src/components/RecruitmentPopup.tsx');
 
