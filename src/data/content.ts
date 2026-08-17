@@ -57,6 +57,21 @@ const guessedKey = (value: string) => value
   .padEnd(8, '0');
 export const timelineSortKey = ({ sortedOn, occurredOn }: Pick<DynamicTimelineItem, 'sortedOn' | 'occurredOn'>) =>
   sortedOn ? sortedOn.replace(/-/g, '') : guessedKey(occurredOn);
+
+// ponytail: 정렬 날짜와 표시 문구를 occurred_on(text) 한 칸에 'YYYY-MM-DD|문구'로 함께 담는다.
+// 표를 바꿀 권한 없이도 날짜 정렬이 되게 하는 방법이다. 전용 date 칸을 만들 수 있게 되면
+// 그 칸으로 옮기고 이 두 함수만 지우면 된다.
+const PACKED = /^(\d{4}-\d{2}-\d{2})\|([\s\S]*)$/;
+
+export const packTimelineDate = (sortedOn: string, occurredOn: string) =>
+  sortedOn ? `${sortedOn}|${occurredOn}` : occurredOn;
+
+export const unpackTimelineDate = (stored: string) => {
+  const packed = PACKED.exec(stored);
+  if (!packed) return { sortedOn: '', occurredOn: stored };
+  const [, sortedOn, label] = packed;
+  return { sortedOn, occurredOn: label.trim() || sortedOn };
+};
 export const sortTimelineNewestFirst = <T extends DynamicTimelineItem>(items: T[]) =>
   [...items].sort((a, b) => timelineSortKey(b).localeCompare(timelineSortKey(a)));
 

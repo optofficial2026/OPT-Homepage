@@ -1,4 +1,4 @@
-import { completeDetail, defaultContent, sortTimelineNewestFirst } from '../data/content';
+import { completeDetail, defaultContent, sortTimelineNewestFirst, unpackTimelineDate } from '../data/content';
 import type { ActivityPost, ArchiveItem, SiteContent, SiteSettings, TimelineItem } from '../data/types';
 import { readContentCache, writeContentCache } from './content-cache';
 import { supabase } from './supabase';
@@ -19,8 +19,7 @@ const settingsFromRow = (row: Record<string, unknown>): SiteSettings => ({
 
 const timelineFromRow = (row: Record<string, unknown>): TimelineItem => ({
   id: String(row.id),
-  occurredOn: String(row.occurred_on),
-  sortedOn: row.sorted_on ? String(row.sorted_on) : '',
+  ...unpackTimelineDate(String(row.occurred_on)),
   title: String(row.title),
   description: String(row.description ?? ''),
 });
