@@ -7,8 +7,10 @@ import {
   displayDate,
   emptyHackathonDetail,
   emptySeminarDetail,
+  packTimelineDate,
   sortTimelineNewestFirst,
   timelineSortKey,
+  unpackTimelineDate,
   validateSlug,
 } from '../src/data/content.ts';
 
@@ -87,4 +89,37 @@ test('rows saved before the sort date existed keep their old guessed order', () 
   assert.deepEqual(sortTimelineNewestFirst(legacy).map(({ id }) => id), ['second-half', 'first-half', 'start']);
   // A saved date wins over the wording even when the two disagree.
   assert.equal(timelineSortKey({ sortedOn: '2026-01-01', occurredOn: '2026년 하반기' }), '20260101');
+});
+
+test('a timeline row carries both its sort date and the wording shown on screen', () => {
+  // 표를 바꿀 권한 없이 정렬 날짜를 저장해야 해서 한 칸에 함께 담는다.
+  assert.equal(packTimelineDate('2026-06-01', '2026년 상반기'), '2026-06-01|2026년 상반기');
+  assert.deepEqual(unpackTimelineDate('2026-06-01|2026년 상반기'), {
+    sortedOn: '2026-06-01', occurredOn: '2026년 상반기',
+  });
+
+  // 담고 꺼내면 원래 값이 그대로 나와야 한다.
+  for (const [date, label] of [['2026-12-01', '2026 겨울'], ['2025-03-07', 'OPT 시작'], ['2026-08-01', 'a|b 포함']]) {
+    assert.deepEqual(unpackTimelineDate(packTimelineDate(date, label)), { sortedOn: date, occurredOn: label });
+  }
+});
+
+test('rows saved before the packed format stay readable and keep their guessed order', () => {
+  // 기존 5건은 문구만 들어 있다. 날짜 없이 읽히고 순서는 종전 추정 규칙을 따른다.
+  assert.deepEqual(unpackTimelineDate('2026년 상반기'), { sortedOn: '', occurredOn: '2026년 상반기' });
+  assert.deepEqual(unpackTimelineDate('2026.09'), { sortedOn: '', occurredOn: '2026.09' });
+
+  // 날짜를 비운 채 저장하면 문구만 남아 예전 형식과 같아진다.
+  assert.equal(packTimelineDate('', '2026년 하반기'), '2026년 하반기');
+
+  const mixed = [
+    { id: 'packed', sortedOn: '2026-12-01', occurredOn: '2026 겨울', title: '', description: '' },
+    { id: 'legacy', sortedOn: '', occurredOn: '2026년 상반기', title: '', description: '' },
+  ];
+  assert.deepEqual(sortTimelineNewestFirst(mixed).map(({ id }) => id), ['packed', 'legacy']);
+});
+
+test('a stored date with no wording still shows something', () => {
+  assert.deepEqual(unpackTimelineDate('2026-06-01|'), { sortedOn: '2026-06-01', occurredOn: '2026-06-01' });
+  assert.deepEqual(unpackTimelineDate('2026-06-01|   '), { sortedOn: '2026-06-01', occurredOn: '2026-06-01' });
 });
