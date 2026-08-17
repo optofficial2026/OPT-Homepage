@@ -28,21 +28,21 @@ export default function ArchivePage() {
   const visibleHackathons = visible.filter((item) => item.kind === 'hackathon');
   const actions = (item: ArchiveItem) => isEditMode && <div className="inline-actions">
     <button onClick={() => setEditing(item)}>수정</button>
-    <button onClick={async () => { if (confirm('삭제할까요? 이 항목에 올린 사진과 자료 파일도 함께 지워집니다.')) { await deleteArchiveItem(item); await refetch(); } }}>삭제</button>
+    <button onClick={async () => { if (confirm('삭제할까요? 이 항목에 올린 파일도 함께 지워집니다.')) { await deleteArchiveItem(item); await refetch(); } }}>삭제</button>
   </div>;
 
   return <>
     <section className="page-head"><div className="hero-grid" /><div className="wrap">
       <a className="back mono" href={sitePath('/')}>← OPT HOME</a><p className="mono cyan">ARCHIVE</p>
-      <h1>자료 아카이브</h1><div>OPT가 쌓아온 세미나와 해커톤 결과물입니다.</div>
+      <h1>자료 아카이브</h1><div>OPT가 쌓아온 활동 자료와 해커톤 결과물입니다.</div>
     </div></section>
     <section className="wrap archive-section">
       <div className="filters" aria-label="기수 필터"><span className="mono cyan">기수</span>
         <button className={cohortFilter === 'ALL' ? 'is-active' : ''} onClick={() => setCohortFilter('ALL')}>전체</button>
         {cohorts.map((cohort) => <button className={cohortFilter === cohort ? 'is-active' : ''} key={cohort} onClick={() => setCohortFilter(cohort)}>{cohort}기</button>)}
       </div>
-      <div className="section-title section-heading"><div><p className="mono cyan">SEMINARS</p><h2>세미나 자료</h2></div>
-        {isEditMode && <button className="admin-action" onClick={() => { setNewKind('seminar'); setEditing(null); }}>세미나 추가</button>}
+      <div className="section-title section-heading"><div><p className="mono cyan">RESOURCES</p><h2>활동 자료</h2></div>
+        {isEditMode && <button className="admin-action" onClick={() => { setNewKind('seminar'); setEditing(null); }}>활동 자료 추가</button>}
       </div>
       <div className="seminar-list">{visibleSeminars.map((item) => <article className="seminar-row-wrap" key={item.id}>
         <a className="seminar-row" href={`${sitePath('/archive/')}?id=${encodeURIComponent(item.slug)}`}><span>{displayDate(item.occurredOn)}</span><b>{(item.detail as SeminarDetail).format ?? 'SLIDE'}</b><strong>{item.title}</strong><i>↗</i></a>{actions(item)}

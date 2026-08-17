@@ -174,7 +174,7 @@ export default function SeminarResourcesField({ name, value = [], onUploadPendin
       </div>
 
       {linkOpen && <div className="resource-link-form">
-        <label>자료 제목<input value={linkTitle} onChange={(event) => setLinkTitle(event.target.value)} placeholder="세미나 발표 영상" /></label>
+        <label>자료 제목<input value={linkTitle} onChange={(event) => setLinkTitle(event.target.value)} placeholder="활동 발표 영상" /></label>
         <label>자료 종류<select value={linkKind} onChange={(event) => setLinkKind(event.target.value as ExternalKind)}>
           <option value="VIDEO">영상</option>
           <option value="WEB">웹 자료</option>

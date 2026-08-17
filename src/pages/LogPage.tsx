@@ -10,9 +10,15 @@ import { displayDate } from '../data/content';
 const filters = ['ALL', 'STUDY', 'SEMINAR', 'EVENT'] as const;
 type Filter = typeof filters[number];
 
+// 홈의 핵심 활동 카드가 ?tag=STUDY 처럼 필터를 미리 걸어 보낸다.
+const requestedFilter = (): Filter => {
+  const tag = new URLSearchParams(location.search).get('tag')?.toUpperCase() ?? '';
+  return (filters as readonly string[]).includes(tag) ? tag as Filter : 'ALL';
+};
+
 export default function LogPage() {
   const { content, isEditMode, refetch } = useSite();
-  const [filter, setFilter] = useState<Filter>('ALL');
+  const [filter, setFilter] = useState<Filter>(requestedFilter);
   const [cohortFilter, setCohortFilter] = useState<number | 'ALL'>('ALL');
   const [editing, setEditing] = useState<ActivityPost | null | undefined>(undefined);
   const id = new URLSearchParams(location.search).get('id');

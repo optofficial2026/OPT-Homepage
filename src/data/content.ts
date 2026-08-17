@@ -63,9 +63,6 @@ export const sortTimelineNewestFirst = <T extends DynamicTimelineItem>(items: T[
 // Stored detail is free-form jsonb, so every reader starts from a complete shape.
 export const emptySeminarDetail: SeminarDetail = {
   format: 'SLIDE',
-  body: '',
-  heroImageUrl: '',
-  galleryUrls: [],
   resourceUrl: '',
   resources: [],
 };
@@ -119,7 +116,7 @@ const defaultArchives: ArchiveItem[] = [
     title: item.title,
     summary: `${item.type} 자료`,
     thumbnailUrl: '',
-    detail: { ...emptySeminarDetail, format: item.type, body: '세미나 상세 내용이 준비 중입니다.' },
+    detail: { ...emptySeminarDetail, format: item.type },
   })),
   ...hackathons.map((item, index): ArchiveItem => ({
     id: `hackathon-${index + 1}`,

@@ -35,7 +35,7 @@ test('quick upload buttons accept only their matching file type', () => {
 
 test('uploaded resource titles come from the file name without its extension', () => {
   assert.equal(resourceTitle('week3.transformer.pdf'), 'week3.transformer');
-  assert.equal(resourceTitle('.pdf'), '세미나 자료');
+  assert.equal(resourceTitle('.pdf'), '활동 자료');
 });
 
 test('external resources require a title, web URL, and unique destination', () => {
@@ -53,7 +53,7 @@ test('legacy seminar links remain visible as web resources', () => {
     id: 'legacy-resource',
     title: '외부 자료',
     kind: 'WEB',
-    description: '기존에 등록된 세미나 자료입니다.',
+    description: '기존에 등록된 활동 자료입니다.',
     url: 'https://example.com/old',
   }]);
 });

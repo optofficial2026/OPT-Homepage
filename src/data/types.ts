@@ -36,11 +36,9 @@ export type ActivityPost = {
   galleryUrls: string[];
 };
 
+/** 활동 자료 항목. 사진과 본문 없이 자료 목록만 모은다. */
 export type SeminarDetail = {
   format: 'SLIDE' | 'NOTE';
-  body: string;
-  heroImageUrl: string;
-  galleryUrls: string[];
   resourceUrl: string;
   resources?: SeminarResource[];
 };

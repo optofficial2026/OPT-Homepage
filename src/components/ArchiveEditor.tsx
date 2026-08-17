@@ -46,9 +46,6 @@ export default function ArchiveEditor({ value, kind, close }: { value?: ArchiveI
     }
     const detail: SeminarDetail | HackathonDetail = kind === 'seminar' ? {
       format: String(form.get('format')) as SeminarDetail['format'],
-      body: String(form.get('body')),
-      heroImageUrl: String(form.get('heroImageUrl')),
-      galleryUrls: list(form, 'galleryUrls'),
       resourceUrl: seminar?.resourceUrl ?? '',
       resources: resources(form),
     } : {
@@ -81,7 +78,7 @@ export default function ArchiveEditor({ value, kind, close }: { value?: ArchiveI
         occurredOn: String(form.get('occurredOn')),
         title: String(form.get('title')),
         summary: String(form.get('summary')),
-        thumbnailUrl: String(form.get('thumbnailUrl')),
+        thumbnailUrl: String(form.get('thumbnailUrl') ?? ''),
         detail,
       });
       await refetch();
@@ -98,7 +95,7 @@ export default function ArchiveEditor({ value, kind, close }: { value?: ArchiveI
   return <dialog className="admin-dialog editor-dialog wide-dialog" open><form ref={formRef} onSubmit={submit} onChange={(event) => { setIsDirty(true); saveDraft(event.currentTarget); }}>
     <button className="dialog-close" type="button" onClick={requestClose}>×</button>
     <p className="mono cyan">ARCHIVE EDIT</p>
-    <h2>{kind === 'hackathon' ? '해커톤' : '세미나'} {value ? '수정' : '추가'}</h2>
+    <h2>{kind === 'hackathon' ? '해커톤' : '활동 자료'} {value ? '수정' : '추가'}</h2>
 
     <fieldset className="editor-group">
       <legend>기본 정보</legend>
@@ -112,53 +109,21 @@ export default function ArchiveEditor({ value, kind, close }: { value?: ArchiveI
       <label>기수<input name="cohort" type="number" min="0" defaultValue={value?.cohort ?? 1} required /></label>
       <label>날짜<input name="occurredOn" type="date" defaultValue={value?.occurredOn.slice(0, 10)} required /></label>
       <label>목록 요약
-        <small>아카이브 목록과 상세 페이지 제목 아래에 표시됩니다.</small>
+        <small>상세 페이지 제목 아래에 표시됩니다.</small>
         <textarea name="summary" defaultValue={value?.summary} required />
       </label>
     </fieldset>
 
-    <fieldset className="editor-group">
-      <legend>목록 이미지</legend>
-      <ImageUploadField
-        label="목록 썸네일"
-        name="thumbnailUrl"
-        folder="archive"
-        value={value?.thumbnailUrl}
-        description="아카이브 목록 카드에 표시됩니다. 16:9 비율로 가운데 기준 자동 crop됩니다."
-        crop="thumbnail"
-        onUploadPendingChange={onUploadPendingChange}
-      />
-    </fieldset>
-
     {kind === 'seminar' ? <>
       <fieldset className="editor-group">
-        <legend>상세 페이지</legend>
+        <legend>목록 표시</legend>
         <label>자료 형식
-          <small>발표 슬라이드는 SLIDE, 글이나 필기 자료는 NOTE를 선택하세요.</small>
+          <small>목록에 붙는 표시입니다. 발표 슬라이드는 SLIDE, 글이나 필기 자료는 NOTE를 선택하세요.</small>
           <select name="format" defaultValue={seminar?.format ?? 'SLIDE'}><option value="SLIDE">SLIDE</option><option value="NOTE">NOTE</option></select>
         </label>
-        <label>세미나 내용
-          <small>문단 사이에 빈 줄을 넣어 작성하세요. 비워두면 ‘준비 중입니다.’가 표시됩니다.</small>
-          <textarea name="body" rows={8} defaultValue={seminar?.body} />
-        </label>
-        <ImageUploadField
-          label="상세 대표 이미지"
-          name="heroImageUrl"
-          folder="archive"
-          value={seminar?.heroImageUrl}
-          description="상세 페이지 제목 아래에 크게 보이는 사진 한 장입니다."
-          onUploadPendingChange={onUploadPendingChange}
-        />
-        <GalleryUploadField
-          name="galleryUrls"
-          folder="archive"
-          value={seminar?.galleryUrls}
-          description="상세 페이지의 ‘세미나 사진’에 표시됩니다. 최대 5장, 장당 10MB 이하입니다."
-          onUploadPendingChange={onUploadPendingChange}
-        />
       </fieldset>
       <fieldset className="editor-group">
-        <legend>관련 링크</legend>
+        <legend>관련 자료</legend>
         <SeminarResourcesField
           name="resources"
           value={seminar ? visibleSeminarResources(seminar) : []}
@@ -166,6 +131,18 @@ export default function ArchiveEditor({ value, kind, close }: { value?: ArchiveI
         />
       </fieldset>
     </> : <>
+      <fieldset className="editor-group">
+        <legend>목록 이미지</legend>
+        <ImageUploadField
+          label="목록 썸네일"
+          name="thumbnailUrl"
+          folder="archive"
+          value={value?.thumbnailUrl}
+          description="아카이브 목록 카드에 표시됩니다. 16:9 비율로 가운데 기준 자동 crop됩니다."
+          crop="thumbnail"
+          onUploadPendingChange={onUploadPendingChange}
+        />
+      </fieldset>
       <fieldset className="editor-group">
         <legend>상세 페이지</legend>
         <label>한 줄 소개<input name="tagline" defaultValue={hackathon?.tagline} /></label>
