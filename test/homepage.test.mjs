@@ -604,6 +604,16 @@ test('new content receives an automatic slug while existing slugs stay editable'
   }
 });
 
+test('the timeline scroll box leaves room for the neon glow on its left', async () => {
+  const styles = await read('src/index.css');
+
+  // 세로 스크롤 컨테이너는 가로도 잘라내므로, 점의 네온 번짐(16px)이 들어갈 자리가 있어야 한다.
+  assert.match(styles, /\.timeline-scroll\{[^}]*margin-left:-18px;padding-left:52px/);
+  assert.match(styles, /\.timeline-scroll::before\{left:23px\}/);
+  // 모바일은 .wrap 여백이 16px 뿐이라 그만큼만 넓혀 화면 밖으로 나가지 않게 한다.
+  assert.match(styles, /@media\(max-width:760px\)\{\.timeline-scroll\{margin-left:-16px;padding-left:43px\}\}/);
+});
+
 test('the home timeline section is labelled 활동 내용', async () => {
   const [home, editor] = await Promise.all([
     read('src/pages/HomePage.tsx'),

@@ -45,3 +45,9 @@
    'Slow & steady'가 접히지 않는 크기로 맞춘다. nowrap 대신 크기로 맞춰 가로 넘침을 막는다. */
 .hero h1{font-size:clamp(40px,7vw,94px)}
 @media(max-width:760px){.hero h1{font-size:clamp(30px,12.5vw,48px)}}
+/* 세로 스크롤 컨테이너라 가로도 함께 잘라내서, 왼쪽 선과 점의 네온 번짐(최대 16px)이 잘렸다.
+   왼쪽으로 18px 만큼 컨테이너를 넓히고 안쪽 여백을 같은 값만큼 더해, 보이는 위치는 그대로 두고 번짐만 살린다. */
+.timeline-scroll{margin-left:-18px;padding-left:52px}
+.timeline-scroll::before{left:23px}
+/* 모바일은 .wrap 의 좌우 여백이 16px 이라, 딱 그만큼만 넓혀 화면 밖으로 나가지 않게 한다. */
+@media(max-width:760px){.timeline-scroll{margin-left:-16px;padding-left:43px}}
