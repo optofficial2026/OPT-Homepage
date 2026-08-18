@@ -616,11 +616,13 @@ test('the home timeline section is labelled 활동 내용', async () => {
   for (const file of [home, editor]) assert.doesNotMatch(file, /연혁/);
 });
 
-test('the recruitment banner spells OPT out as Optimizer', async () => {
+test('the recruitment banner spells OPT out as Optimization', async () => {
   const popup = await read('src/components/RecruitmentPopup.tsx');
 
-  assert.match(popup, /OPT \(Optimizer\)는 당신이 목표를 향한 첫발을 내딛도록/);
-  assert.doesNotMatch(popup, /Optimal Personal Teacher/);
+  assert.match(popup, /OPT \(Optimization\)는 당신이 목표를 향한 첫발을 내딛도록/);
+  for (const old of ['Optimal Personal Teacher', 'Optimizer']) {
+    assert.doesNotMatch(popup, new RegExp(old));
+  }
 });
 
 test('the hero headline keeps three lines with OPT as the accented one', async () => {
