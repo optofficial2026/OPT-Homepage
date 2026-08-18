@@ -32,7 +32,7 @@ export default function RecruitmentPopup({ settings, contentLoading }: { setting
       <button className="modal-x" type="button" aria-label="모집 팝업 닫기" onClick={() => setOpen(false)}>×</button>
       <p>JOIN OPT · {settings.recruitmentCohort}TH</p>
       <h1 id="recruitment-popup-title">AI를 공부하고 싶은데 막막한 당신!</h1>
-      <div>OPT (Optimizer)는 당신이 목표를 향한 첫발을 내딛도록 함께할 준비가 되어 있습니다.</div>
+      <div>OPT (Optimization)는 당신이 목표를 향한 첫발을 내딛도록 함께할 준비가 되어 있습니다.</div>
       <div className="modal-actions recruitment-popup-cta">
         {settings.recruitmentFormUrl ? <a className="button dark" href={settings.recruitmentFormUrl} target="_blank" rel="noreferrer">지원하기</a> : <button className="button dark" type="button" disabled>지원하기</button>}
       </div>
